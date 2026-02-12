@@ -9,7 +9,8 @@ export default function AppLayout() {
     <div>
       <nav style={{ padding: "1rem", borderBottom: "1px solid #ccc" }}>
         <Link to="/">Home</Link>{" "}
-        <Link to="/experiments">Experiments</Link>
+        <Link to="/experiments">Experiments</Link>{" "}
+        <Link to="/articles">Articles</Link>
       </nav>
 
       <main style={{ padding: "1rem" }}>

@@ -1,68 +1,131 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* ======================================================
+   POP JOURNAL THEME TOKENS
+   ====================================================== */
+@theme {
+  --color-bg-main: #0c0f1a;
+  --color-bg-panel: #141827;
+  --color-bg-hover: #1b2135;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --color-text-main: #f3f4f6;
+  --color-text-dim: #9ca3af;
+
+  --color-accent-primary: #7c5cff;
+  --color-accent-secondary: #22d3ee;
+  --color-accent-glow: rgba(124,92,255,0.35);
+
+  --color-border: rgba(255,255,255,0.08);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+/* ======================================================
+   GLOBAL LAYOUT
+   ====================================================== */
+html,
+body,
+#root {
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+@layer base {
+  body {
+    @apply bg-bg-main text-text-main font-mono antialiased;
+  }
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+/* ======================================================
+   NAVIGATION ITEMS — brighter + responsive
+   ====================================================== */
+.nav-item {
+  @apply px-3 py-2 rounded-lg cursor-pointer transition-all duration-200;
+  color: var(--color-text-dim);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.nav-item:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-main);
+  transform: translateX(2px);
+}
+
+/* ======================================================
+   JOURNAL BUTTON — POP STYLE
+   ====================================================== */
+.journal-button {
+  @apply h-9 px-4 text-sm rounded-lg flex items-center justify-center transition-all duration-200 tracking-wide;
+  border: 1px solid var(--color-border);
+  background: linear-gradient(
+    135deg,
+    rgba(124,92,255,0.15),
+    rgba(34,211,238,0.05)
+  );
+}
+
+.journal-button:hover {
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 14px var(--color-accent-glow);
+  transform: translateY(-1px);
+}
+
+/* ======================================================
+   SELECT INPUTS
+   ====================================================== */
+.journal-select {
+  @apply h-9 px-3 rounded-lg text-sm transition-all;
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-main);
+}
+
+.journal-select:focus {
+  outline: none;
+  border-color: var(--color-accent-secondary);
+  box-shadow: 0 0 0 2px rgba(34,211,238,0.25);
+}
+
+/* ======================================================
+   PANELS / CARDS
+   ====================================================== */
+.journal-panel {
+  @apply rounded-xl p-4;
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  box-shadow:
+    0 8px 28px rgba(0,0,0,0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.02);
+}
+
+/* ======================================================
+   SECTION LABELS
+   ====================================================== */
+.section-label {
+  @apply uppercase text-[11px] tracking-wider;
+  color: var(--color-accent-secondary);
+  opacity: 0.9;
+}
+
+/* ======================================================
+   EDITOR SURFACE
+   ====================================================== */
+.journal-editor {
+  @apply w-full h-full overflow-auto;
+}
+
+.journal-editor textarea,
+.journal-editor [contenteditable="true"] {
+  background: transparent;
+  outline: none;
+  caret-color: var(--color-accent-secondary);
+}
+
+/* ======================================================
+   GLOW PULSE — subtle but lively
+   ====================================================== */
+@keyframes accentPulse {
+  0%   { box-shadow: 0 0 0px var(--color-accent-glow); }
+  50%  { box-shadow: 0 0 18px var(--color-accent-glow); }
+  100% { box-shadow: 0 0 0px var(--color-accent-glow); }
+}
+
+.accent-pulse {
+  animation: accentPulse 2.4s ease-in-out infinite;
 }
