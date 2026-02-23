@@ -1,6 +1,9 @@
 import React from 'react'
 // 1. Import your "Appliance"
 import DateClock from '../features/SystemClock'
+import { NavLink } from 'react-router-dom'
+
+
 
 const MenuBar = () => {
   return (
@@ -8,10 +11,12 @@ const MenuBar = () => {
     <nav className="flex justify-between items-center w-full p-4 bg-gray-900 text-white border-b border-gray-700">
       
       {/* LEFT SIDE: Future Navigation Items */}
-      <div className="flex gap-4">
+      <div className="flex gap-5">
         <div className="font-bold text-xl tracking-wider">Reacting</div>
         {/* <NavigateHome /> will go here later */}
-        {/* <ExperimentsDropdown /> will go here later */}
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/experiments">Experiments</NavLink>
+        <NavLink to="/resources">Resources</NavLink>
       </div>
 
       {/* RIGHT SIDE: Status Items */}
