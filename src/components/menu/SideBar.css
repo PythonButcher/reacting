@@ -1,0 +1,36 @@
+/* Side Panel (Modern Sliding UI) */
+.side-panel {
+  position: fixed;
+  top: 80px;
+  /* Adjust if your MenuBar is taller */
+  right: -480px;
+  /* Slide it off-screen initially */
+  width: 430px;
+  height: calc(100% - 80px);
+  /* Fill below the menu bar */
+  background-color: var(--bg-primary);
+  box-shadow: -8px 0 20px var(--shadow-color-strong);
+  border-left: 1px solid var(--border-color);
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  z-index: 1500;
+  transition: right 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-panel.open {
+  right: 20px;
+}
+
+.side-header {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color);
+  border-top-left-radius: 16px;
+}
