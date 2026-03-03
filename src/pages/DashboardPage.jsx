@@ -1,4 +1,4 @@
-export default function HomePage() {
+export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="border-b border-border pb-4">

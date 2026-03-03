@@ -1,4 +1,4 @@
-export default function ResourcePage() {
+export default function DocumentationPage() {
   return (
     <div className="space-y-6">
       <div className="border-b border-border pb-4">
