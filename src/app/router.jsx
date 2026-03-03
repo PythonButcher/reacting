@@ -3,9 +3,9 @@
 
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "./AppLayout";
-import HomePage from "../pages/HomePage";
-import ExperimentsPage from "../pages/ExperimentsPage";
-import ResourcePage from "../pages/Resources";
+import DashboardPage from "../pages/DashboardPage";
+import ActiveTestsPage from "../pages/ActiveTestsPage";
+import DocumentationPage from "../pages/DocumentationPage";
 import NotFoundPage from "../pages/NotFoundPage";
 
 export const router = createBrowserRouter([
@@ -15,17 +15,15 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
-      
+        element: <DashboardPage />,
       },
       {
         path: "experiments",
-        element: <ExperimentsPage />,
-
+        element: <ActiveTestsPage />,
       },
       {
         path: "resources",
-        element: <ResourcePage />,
+        element: <DocumentationPage />,
       },
       {
         path: "*",
