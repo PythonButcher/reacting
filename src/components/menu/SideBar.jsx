@@ -1,4 +1,5 @@
 import React, {  useEffect, useRef } from 'react';
+import CloseButton from '../buttons/CloseButton';
 
 
 const SideBar = ({ showSideBar , setShowSideBar}) => {
@@ -32,11 +33,13 @@ const SideBar = ({ showSideBar , setShowSideBar}) => {
   return (
     <>
       <div 
-        ref={sidePanelRef} 
+        ref={sidePanelRef}
+        
         className={`side-panel fixed inset-y-0 left-0 w-64 bg-gray-800 transform transition-transform duration-300 ${
             showSideBar ? "translate-x-0" : "-translate-x-full"
         }`}
       >
+        <CloseButton onClick={() => setShowSideBar(false)} />
         <div className="p-4 text-white">
             Sidebar content goes here
         </div>
