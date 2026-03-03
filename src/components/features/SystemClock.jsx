@@ -43,13 +43,13 @@ const DateClock = () => {
     }, []);
 
     return (
-        <div className="flex items-center gap-2 border-l-2 border-hud-blue/30 pl-4 ml-4">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-                Clock
+        <div className="flex items-center gap-2 border-l-2 border-accent-primary/30 pl-4 ml-4">
+            <span className="text-xs font-bold text-text-dim uppercase tracking-widest">
+                SYSTEM_TIME
             </span>
 
             {/* Render the live date/time */}
-            <span className="text-lg font-mono text-hud-blue tracking-widest font-bold">
+            <span className="text-lg font-mono text-accent-secondary tracking-widest font-bold">
                 {date}
             </span>
         </div>

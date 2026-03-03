@@ -18,7 +18,7 @@ export default function AppLayout() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-bg-main">
       {/* 1. Pass the toggle function down to MenuBar as a prop */}
       <MenuBar onToggleSidebar={handleToggleSidebar} />
 
@@ -28,9 +28,12 @@ export default function AppLayout() {
         setShowSideBar={setShowSideBar}
       />
 
-      <main style={{ padding: "1rem" }}>
-        {/* The Magic Window where pages swap out */}
-        <Outlet />
+      <main className="flex-1 p-4 overflow-auto">
+        {/* Wrap content in a laboratory panel for a modular look */}
+        <div className="journal-panel min-h-full">
+          {/* The Magic Window where pages swap out */}
+          <Outlet />
+        </div>
       </main>
     </div>
   );

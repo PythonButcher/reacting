@@ -1,10 +1,27 @@
 export default function HomePage() {
   return (
-    <div>
-      <h1>Reacting Playground</h1>
-      <p>This is the home base for React experiments.</p>
-      <p> Home Page.</p>
-      <p> Notebook dedicated to React Programming.</p>
+    <div className="space-y-6">
+      <div className="border-b border-border pb-4">
+        <h1 className="text-3xl font-bold tracking-widest text-accent-primary uppercase">DASHBOARD // HOME_BASE</h1>
+        <p className="text-text-dim text-xs mt-1">STATUS: OPERATIONAL | SECURE_CONNECTION: ESTABLISHED</p>
+      </div>
+
+      <div className="space-y-4 text-text-main leading-relaxed">
+        <p className="font-mono text-sm">
+          Welcome to the central command for React experiments. This terminal serves as the entry point for all active testing modules.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="border border-border p-4 bg-bg-hover rounded-sm">
+            <h2 className="section-label mb-2">System_Brief</h2>
+            <p className="text-sm text-text-dim">Notebook dedicated to React Programming and Laboratory testing.</p>
+          </div>
+          <div className="border border-border p-4 bg-bg-hover rounded-sm">
+            <h2 className="section-label mb-2">Terminal_Log</h2>
+            <p className="text-sm text-text-dim">Last Access: Tuesday, March 3, 2026. All systems nominal.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

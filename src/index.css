@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 /* ======================================================
-   POP JOURNAL THEME TOKENS
+   LABORATORY TERMINAL TOKENS
    ====================================================== */
 @theme {
-  --color-bg-main: #0c0f1a;
-  --color-bg-panel: #141827;
-  --color-bg-hover: #1b2135;
+  --color-bg-main: #12141a;
+  --color-bg-panel: #1a1d26;
+  --color-bg-hover: #222631;
 
   --color-text-main: #f3f4f6;
   --color-text-dim: #9ca3af;
 
-  --color-accent-primary: #7c5cff;
-  --color-accent-secondary: #22d3ee;
-  --color-accent-glow: rgba(124,92,255,0.35);
+  --color-accent-primary: #f59e0b; /* Safety Orange */
+  --color-accent-secondary: #10b981; /* Isotope Green */
+  --color-accent-glow: rgba(245, 158, 11, 0.35);
 
-  --color-border: rgba(255,255,255,0.08);
+  --color-border: rgba(245, 158, 11, 0.2);
 }
 
 /* ======================================================
@@ -30,77 +30,77 @@ body,
 @layer base {
   body {
     @apply bg-bg-main text-text-main font-mono antialiased;
+    background-image: 
+      linear-gradient(rgba(245, 158, 11, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245, 158, 11, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 }
 
 /* ======================================================
-   NAVIGATION ITEMS — brighter + responsive
+   NAVIGATION ITEMS — mechanical + responsive
    ====================================================== */
 .nav-item {
-  @apply px-3 py-2 rounded-lg cursor-pointer transition-all duration-200;
+  @apply px-3 py-2 rounded-sm cursor-pointer transition-all duration-200;
   color: var(--color-text-dim);
 }
 
 .nav-item:hover {
   background: var(--color-bg-hover);
-  color: var(--color-text-main);
+  color: var(--color-accent-primary);
   transform: translateX(2px);
 }
 
 /* ======================================================
-   JOURNAL BUTTON — POP STYLE
+   LABORATORY BUTTON — MECHANICAL
    ====================================================== */
 .journal-button {
-  @apply h-9 px-4 text-sm rounded-lg flex items-center justify-center transition-all duration-200 tracking-wide;
-  border: 1px solid var(--color-border);
-  background: linear-gradient(
-    135deg,
-    rgba(124,92,255,0.15),
-    rgba(34,211,238,0.05)
-  );
+  @apply h-9 px-4 text-sm rounded-sm flex items-center justify-center transition-all duration-200 tracking-wide;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.05);
 }
 
 .journal-button:hover {
   border-color: var(--color-accent-primary);
-  box-shadow: 0 0 14px var(--color-accent-glow);
-  transform: translateY(-1px);
+  box-shadow: 0 0 10px var(--color-accent-glow);
+  background: rgba(245, 158, 11, 0.1);
 }
 
 /* ======================================================
    SELECT INPUTS
    ====================================================== */
 .journal-select {
-  @apply h-9 px-3 rounded-lg text-sm transition-all;
+  @apply h-9 px-3 rounded-sm text-sm transition-all;
   background: var(--color-bg-panel);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   color: var(--color-text-main);
 }
 
 .journal-select:focus {
   outline: none;
   border-color: var(--color-accent-secondary);
-  box-shadow: 0 0 0 2px rgba(34,211,238,0.25);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25);
 }
 
 /* ======================================================
-   PANELS / CARDS
+   PANELS / CARDS (Laboratory Panel)
    ====================================================== */
 .journal-panel {
-  @apply rounded-xl p-4;
+  @apply rounded-sm p-4;
   background: var(--color-bg-panel);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   box-shadow:
-    0 8px 28px rgba(0,0,0,0.35),
-    inset 0 0 0 1px rgba(255,255,255,0.02);
+    0 4px 12px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(245, 158, 11, 0.02);
 }
 
 /* ======================================================
    SECTION LABELS
    ====================================================== */
 .section-label {
-  @apply uppercase text-[11px] tracking-wider;
+  @apply uppercase text-[11px] tracking-wider font-bold;
   color: var(--color-accent-secondary);
-  opacity: 0.9;
+  opacity: 1;
 }
 
 /* ======================================================
@@ -118,11 +118,11 @@ body,
 }
 
 /* ======================================================
-   GLOW PULSE — subtle but lively
+   GLOW PULSE — mechanical warning
    ====================================================== */
 @keyframes accentPulse {
   0%   { box-shadow: 0 0 0px var(--color-accent-glow); }
-  50%  { box-shadow: 0 0 18px var(--color-accent-glow); }
+  50%  { box-shadow: 0 0 12px var(--color-accent-glow); }
   100% { box-shadow: 0 0 0px var(--color-accent-glow); }
 }
 
