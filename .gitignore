@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Drive Export Artifacts
+drive_export/
+export_to_drive.bat

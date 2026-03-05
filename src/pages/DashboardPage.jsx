@@ -20,6 +20,10 @@ export default function DashboardPage() {
             <h2 className="section-label mb-2">Terminal_Log</h2>
             <p className="text-sm text-text-dim">Last Access: Tuesday, March 3, 2026. All systems nominal.</p>
           </div>
+          <div className="border border-border p-4 bg-bg-hover rounded-sm">
+            <h2 className="section-label mb-2">Project Meta Data</h2>
+            <p className="text-sm text-text-dim">Placeholder for now.</p>
+          </div>
         </div>
       </div>
     </div>
