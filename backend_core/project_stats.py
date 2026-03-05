@@ -1,66 +1,84 @@
 import os
-import time
+from collections import defaultdict
 
-def scan_workspace_health(root_path: str):
+
+def scan_project_stats(root_path: str):
     """
-    Scans workspace to estimate health based on number of files or other metrics.
+    Collects general project statistics from a filesystem path.
+
+    This function performs a single pass through the directory tree
+    and extracts structural statistics useful for dashboards.
     """
+
     total_files = 0
-    score = 100
-    for root, _, files in os.walk(root_path):
-        if "node_modules" in root or ".git" in root:
-            continue
-        total_files += len(files)
-        
-    return {
-        "score": score,
-        "total_files": total_files,
-        "status": "Healthy" if score > 75 else "Needs Attention"
-    }
+    total_dirs = 0
+    total_size = 0
 
-def scan_technical_debt(root_path: str):
-    """
-    Scans for 'TODO' or 'FIXME' comments to estimate technical debt.
-    """
-    todo_count = 0
-    for root, _, files in os.walk(root_path):
-        if "node_modules" in root or ".git" in root:
-            continue
-        for file in files:
-            if file.endswith((".py", ".js", ".ts", ".tsx")):
-                try:
-                    with open(os.path.join(root, file), "r", encoding="utf-8") as f:
-                        content = f.read()
-                        todo_count += content.upper().count("TODO")
-                        todo_count += content.upper().count("FIXME")
-                except Exception:
-                    continue
-    
-    return {
-        "todo_count": todo_count,
-        "debt_level": "Low" if todo_count < 5 else "Medium" if todo_count < 15 else "High"
-    }
+    # Track file extensions (.py, .js, etc)
+    file_types = defaultdict(int)
 
-def scan_recent_edits(root_path: str, max_items: int = 20, max_days: int = 7):
-    """
-    Scans for recently edited files.
-    """
-    recent_files = []
-    now = time.time()
-    for root, _, files in os.walk(root_path):
-        if "node_modules" in root or ".git" in root:
-            continue
+    # Track largest files
+    largest_files = []
+
+    # Track directory depth
+    max_depth = 0
+
+    # Ignore heavy directories
+    ignored = {"node_modules", ".git", "__pycache__", ".venv"}
+
+    for root, dirs, files in os.walk(root_path):
+
+        # Remove ignored directories from traversal
+        dirs[:] = [d for d in dirs if d not in ignored]
+
+        total_dirs += len(dirs)
+
+        # Calculate depth relative to root
+        rel_path = os.path.relpath(root, root_path)
+        depth = 0 if rel_path == "." else rel_path.count(os.sep) + 1
+        max_depth = max(max_depth, depth)
+
         for file in files:
+
+            total_files += 1
+
             file_path = os.path.join(root, file)
+
             try:
-                mtime = os.path.getmtime(file_path)
-                days_old = (now - mtime) / (24 * 3600)
-                if days_old <= max_days:
-                    # Provide relative path for nicer output
-                    rel_path = os.path.relpath(file_path, root_path)
-                    recent_files.append({"path": rel_path, "mtime": mtime})
+                size = os.path.getsize(file_path)
+                total_size += size
+
+                # Track extension
+                _, ext = os.path.splitext(file)
+                ext = ext.lower() if ext else "no_ext"
+                file_types[ext] += 1
+
+                # Track largest files
+                largest_files.append((size, file_path))
+
             except Exception:
                 continue
-                
-    recent_files.sort(key=lambda x: x["mtime"], reverse=True)
-    return recent_files[:max_items]
+
+    # Keep only top 10 largest files
+    largest_files.sort(reverse=True)
+    largest_files = largest_files[:10]
+
+    largest_files_formatted = [
+        {
+            "path": os.path.relpath(path, root_path),
+            "size_bytes": size
+        }
+        for size, path in largest_files
+    ]
+
+    avg_file_size = total_size / total_files if total_files else 0
+
+    return {
+        "total_files": total_files,
+        "total_directories": total_dirs,
+        "total_size_bytes": total_size,
+        "average_file_size": avg_file_size,
+        "max_directory_depth": max_depth,
+        "file_type_distribution": dict(file_types),
+        "largest_files": largest_files_formatted
+    }
