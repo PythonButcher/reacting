@@ -1,3 +1,7 @@
+import BackendData from '../components/features/BackendData';
+import BackendProjectStats from '../components/features/BackendProjectStats';
+
+
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
@@ -12,6 +16,9 @@ export default function DashboardPage() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* This component connects to your Python backend */}
+          <BackendData />
+
           <div className="border border-border p-4 bg-bg-hover rounded-sm">
             <h2 className="section-label mb-2">System_Brief</h2>
             <p className="text-sm text-text-dim">Notebook dedicated to React Programming and Laboratory testing.</p>
@@ -22,7 +29,7 @@ export default function DashboardPage() {
           </div>
           <div className="border border-border p-4 bg-bg-hover rounded-sm">
             <h2 className="section-label mb-2">Project Meta Data</h2>
-            <p className="text-sm text-text-dim">Placeholder for now.</p>
+            <BackendProjectStats />
           </div>
         </div>
       </div>
