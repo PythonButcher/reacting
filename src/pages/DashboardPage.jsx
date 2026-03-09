@@ -1,4 +1,6 @@
 import BackendData from '../components/features/BackendData';
+import BackendProjectStats from '../components/features/BackendProjectStats';
+
 
 export default function DashboardPage() {
   return (
@@ -27,7 +29,7 @@ export default function DashboardPage() {
           </div>
           <div className="border border-border p-4 bg-bg-hover rounded-sm">
             <h2 className="section-label mb-2">Project Meta Data</h2>
-            <p className="text-sm text-text-dim">Placeholder for now.</p>
+            <BackendProjectStats />
           </div>
         </div>
       </div>

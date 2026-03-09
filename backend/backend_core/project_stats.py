@@ -24,7 +24,17 @@ def scan_project_stats(root_path: str):
     max_depth = 0
 
     # Ignore heavy directories
-    ignored = {"node_modules", ".git", "__pycache__", ".venv"}
+    ignored = {
+    "node_modules",
+    ".git",
+    "__pycache__",
+    ".venv",
+    "dist",
+    "build",
+    ".next",
+    ".cache",
+    ".json"
+}
 
     for root, dirs, files in os.walk(root_path):
 
