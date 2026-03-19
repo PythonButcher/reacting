@@ -1,0 +1,70 @@
+// AiCommandBlock.jsx
+
+import { FaChartBar, FaBrain, FaLightbulb, FaRocket, FaBroom, FaExclamationTriangle } from "react-icons/fa";
+
+// Defines all available AI command blocks for the workflow system
+export const contextMenuCommands = {
+  summary: {
+    id: "cmd-summary",
+    command: "/summary",
+    display: "Summary",
+    description: "Provides a dataset summary (mean, median, null count).",
+    action: "fetch_summary",
+    params: ["dataset"],
+    icon: FaBrain,
+  },
+  outliers: {
+    id: "cmd-outliers",
+    command: "/outliers",
+    display: "Outliers",
+    description: "Detects anomalies in the dataset.",
+    action: "detect_outliers",
+    params: ["dataset"],
+    icon: FaExclamationTriangle,
+  },
+  charts: {
+    id: "cmd-charts",
+    command: "/charts",
+    display: "Charts",
+    description: "Generates suggested charts from AI.",
+    action: "fetch_ai_charts",
+    params: ["dataset"],
+    icon: FaChartBar,
+  },
+  insights: {
+    id: "cmd-insights",
+    command: "/insights",
+    display: "Data Insights",
+    description: "Returns AI-driven insights for data.",
+    action: "fetch_insights",
+    params: ["dataset"],
+    icon: FaLightbulb,
+  },
+  clean: {
+    id: "cmd-clean",
+    command: "/clean",
+    display: "Clean Data",
+    description: "Automatically cleans the dataset.",
+    action: "fetch_clean",
+    params: ["dataset"],
+    icon: FaBroom,
+  },
+  execute: {
+    id: "cmd-execute",
+    command: "/execute", // Pseudo-command, triggers workflow
+    display: "Execute",
+    description: "Trigger execution of all AI nodes",
+    action: "trigger_execution",
+    params: [],
+    icon: FaRocket,
+  }
+};
+
+// Compatibility utility for legacy consumers like AIChat.jsx
+export const MenuCommands = {
+  commands: Object.keys(contextMenuCommands).map((key) => contextMenuCommands[key].command),
+
+  isCommand: (input) => {
+    return MenuCommands.commands.includes(input.split(" ")[0]);
+  },
+};

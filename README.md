@@ -1,16 +1,54 @@
-# React + Vite
+# LAB_TERMINAL //: REACT.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modular laboratory environment for React experiments featuring a mechanical terminal-inspired UI.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend:** React 19, Vite, React Router, Tailwind CSS v4 (using the `@tailwindcss/vite` plugin).
+- **Backend:** Python FastAPI server providing system telemetry and project-wide filesystem statistics.
 
-## React Compiler
+## Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Dashboard:** Central command with live backend data connection status and terminal logs.
+- **Project Information:** Real-time filesystem metrics (total files, size, largest files) scanned via a custom Python utility (`project_stats.py`). It calculates metrics like average file size, directory depth, and file type distribution while ignoring heavy directories like `node_modules` and `.git`.
+- **System Clock:** High-performance live clock using `Intl.DateTimeFormat`.
+- **UI Components:** Custom "Laboratory Panel" layout, "Mechanical" buttons, and an orange/green safety-themed terminal aesthetic.
 
-## Expanding the ESLint configuration
+## UI Theme Tokens
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The project uses a specific set of theme tokens defined in `src/index.css`:
+
+- **Safety Orange:** `--color-accent-primary` (#f59e0b) - Used for primary actions and highlights.
+- **Isotope Green:** `--color-accent-secondary` (#10b981) - Used for success states and secondary accents.
+- **Backgrounds:** `--color-bg-main` (#12141a) and `--color-bg-panel` (#1a1d26).
+- **Typography:** Monochrome/Mono-spaced font stack for that terminal feel.
+
+## Getting Started
+
+### Prerequisites
+- Node.js (Latest LTS)
+- Python 3.10+
+
+### Installation
+
+1. Install Frontend dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Install Backend dependencies:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+
+### Running the Project
+
+1. Start the Vite dev server:
+   ```bash
+   npm run dev
+   ```
+
+2. Start the FastAPI backend:
+   ```bash
+   python backend/main.py
+   ```

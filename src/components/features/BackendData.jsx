@@ -1,26 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useFetchFlask } from '../../hooks/useFlaskFetch';
 
 const BackendData = () => {
-  const [data, setData] = useState(null);
-  const [status, setStatus] = useState('CONNECTING...');
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('http://127.0.0.1:8000/api/data');
-        if (!res.ok) throw new Error(`HTTP_ERROR: ${res.status}`);
-        const json = await res.json();
-        setData(json);
-        setStatus('LINK_ESTABLISHED');
-      } catch (err) {
-        setError(err.message);
-        setStatus('OFFLINE');
-      }
-    };
-
-    fetchData();
-  }, []);
+    const { data, loading, error } = useFetchFlask('http://127.0.0.1:8000/api/data');
+    const status = loading ? 'CONNECTING...' : error ? 'OFFLINE' : 'LINK_ESTABLISHED';
 
   return (
     <div className="border border-border p-4 bg-bg-hover rounded-sm">
