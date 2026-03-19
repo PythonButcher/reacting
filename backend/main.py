@@ -23,8 +23,8 @@ app.add_middleware(
 async def root():
     return {"message": "Hello from the Python backend!"}
 
-@app.get("/api/data")
-async def get_data():
+@app.get("/api/weather")
+async def get_weather():
     return {
         "id": 1,
         "name": "Solo Laboratory",
