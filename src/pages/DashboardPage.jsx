@@ -1,6 +1,5 @@
-import BackendData from '../components/features/BackendData';
 import BackendProjectStats from '../components/features/BackendProjectStats';
-
+import WeatherUpdate from '../components/features/WeatherData';
 
 export default function DashboardPage() {
   return (
@@ -16,17 +15,21 @@ export default function DashboardPage() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* This component connects to your Python backend */}
-          <BackendData />
-
+          <div className="border border-border p-4 bg-bg-hover rounded-sm">
+            <h2 className="section-label mb-2">Update</h2>
+            <p className="text-sm text-text-dim">Find a useful purpose for this block.</p>
+          </div>
+    
           <div className="border border-border p-4 bg-bg-hover rounded-sm">
             <h2 className="section-label mb-2">System_Brief</h2>
             <p className="text-sm text-text-dim">Notebook dedicated to React Programming and Laboratory testing.</p>
           </div>
+
           <div className="border border-border p-4 bg-bg-hover rounded-sm">
-            <h2 className="section-label mb-2">Terminal_Log</h2>
-            <p className="text-sm text-text-dim">Last Access: Tuesday, March 3, 2026. All systems nominal.</p>
+            <h2 className="section-label mb-2">Weather Update</h2>
+            <WeatherUpdate />
           </div>
+
           <div className="border border-border p-4 bg-bg-hover rounded-sm">
             <h2 className="section-label mb-2">Project Meta Data</h2>
             <BackendProjectStats />
