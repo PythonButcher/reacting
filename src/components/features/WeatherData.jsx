@@ -7,6 +7,7 @@ const WeatherUpdate = () => {
     const get_status = loading ? 'CONNECTING...' : error ? 'OFFLINE' : 'LINK_ESTABLISHED';
 
     return (
+        
         <div className="border border-border p-4 bg-bg-hover rounded-sm">
             <h2 className="section-label mb-2">Local Weather</h2>
 
@@ -22,6 +23,27 @@ const WeatherUpdate = () => {
                     <div className="flex justify-between">
                         <span className="text-text-dim">CITY:</span>
                         <span className="text-text-main">{data.name}</span>
+                    </div>
+                )}
+
+                {data && !error && (
+                    <div className="flex justify-between">
+                        <span className="text-text-dim">Region:</span>
+                        <span className="text-text-main">{data.region}</span>
+                    </div>
+                )}
+
+                {data && !error && (
+                    <div className="flex justify-between">
+                        <span className="text-text-dim">Current Time:</span>
+                        <span className="text-text-main">{data.localtime}</span>
+                    </div>
+                )}
+
+                {data && !error && (
+                    <div className="flex justify-between">
+                        <span className="text-text-dim">Temperature:</span>
+                        <span className="text-text-main">{data.temp_f} degrees</span>
                     </div>
                 )}
             </div>
