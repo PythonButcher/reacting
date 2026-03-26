@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# dotenv
+.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -26,5 +29,3 @@ dist-ssr
 # Drive Export Artifacts
 drive_export/
 export_to_drive.bat
-
-.env
