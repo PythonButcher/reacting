@@ -4,8 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend_core.project_stats import scan_project_stats
 import os
 from pathlib import Path
+import httpx
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 app = FastAPI()
+
 
 # Configure CORS so your React app (on http://localhost:5173 or 5174) can talk to this backend
 app.add_middleware(
@@ -25,12 +31,31 @@ async def root():
 
 @app.get("/api/weather")
 async def get_weather():
-    return {
-        "id": 1,
-        "name": "Solo Laboratory",
-        "status": "Online",
-        "details": "This data is coming directly from your FastAPI backend."
-    }
+    # === ENTER YOUR WEATHERAPI.COM CREDENTIALS HERE ===
+    api_key = os.getenv("WEATHERAPI_KEY")
+    zip_code = os.getenv("WEATHERAPI_ZIP")
+    # ==================================================
+    
+    if not api_key or not zip_code:
+        return {"error": "Please set WEATHERAPI_KEY and WEATHERAPI_ZIP in backend/.env"}
+        
+    url = f"http://api.weatherapi.com/v1/current.json?key={api_key}&q={zip_code}&aqi=no"
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url)
+            response.raise_for_status()
+            data = response.json()
+            return {
+                "name": data.get("location", {}).get("name"),
+                "region": data.get("location", {}).get("region"),
+                "localtime": data.get("location", {}).get("localtime"),
+                "temp_f": data.get("current", {}).get("temp_f"),
+                "condition": data.get("current", {}).get("condition", {}).get("text")
+            }
+        except httpx.HTTPError as e:
+            print("I see no weather data " [data])
+            return {"error": f"Failed to fetch weather data: {str(e)}"}
 
 @app.get("/api/stats")
 async def get_project_stats():
