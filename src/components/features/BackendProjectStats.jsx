@@ -1,5 +1,6 @@
 import React from 'react';
 import { useFetchFlask } from '../../hooks/useFlaskFetch';
+import DetailRow from './DetailRow';
 
 const BackendProjectStats = () => {
     const { data, loading, error } = useFetchFlask('http://127.0.0.1:8000/api/stats');
@@ -22,29 +23,11 @@ const BackendProjectStats = () => {
 
           {stats ? (
             <>
-              <div className="flex justify-between">
-                <span className="text-text-dim">TOTAL_FILES:</span>
-                <span className="text-text-main">{stats.total_files}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-text-dim">DIRECTORIES:</span>
-                <span className="text-text-main">{stats.total_directories}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-text-dim">PROJECT_SIZE_MB:</span>
-                <span className="text-text-main">
-                  {(stats.total_size_bytes / 1024 / 1024).toFixed(2)}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-text-dim">MAX_DEPTH:</span>
-                <span className="text-text-main">{stats.max_directory_depth}</span>
-              </div>
-
-              <div className="mt-3 text-text-dim">LARGEST_FILES:</div>
+            <DetailRow label="TOTAL_FILES:" value={stats.total_files} />
+            <DetailRow label="DIRECTORIES:" value={stats.total_directories} />
+            <DetailRow label="PROJECT_SIZE_MB:" value={(stats.total_size_bytes / 1024 / 1024).toFixed(2)} />
+            <DetailRow label="MAX_DEPTH:" value={stats.max_directory_depth} />
+            <DetailRow label="LARGEST_FILES:" />
 
               {stats?.largest_files?.slice(0, 3).map((file) => (
                 <div key={file.path} className="flex justify-between">
