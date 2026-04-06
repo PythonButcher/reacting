@@ -1,5 +1,7 @@
 import React from 'react';
 import { useFetchFlask } from '../../hooks/useFlaskFetch';
+import DetailRow from './DetailRow';
+
 
 const WeatherUpdate = () => {
     console.log("Here is the data{data}")
@@ -20,32 +22,16 @@ const WeatherUpdate = () => {
                 </div>
                 
                 {data && !error && (
-                    <div className="flex justify-between">
-                        <span className="text-text-dim">CITY:</span>
-                        <span className="text-text-main">{data.name}</span>
-                    </div>
+                    <>
+                    <DetailRow label="CITY:" value={data.name} />
+                    <DetailRow label="Region:" value={data.region} />
+                    <DetailRow label="Current Time:" value={data.localtime} />
+                    <DetailRow label="Temperature:" value={data.temp_f + "°F"} />
+        
+                    
+                  </>
                 )}
-
-                {data && !error && (
-                    <div className="flex justify-between">
-                        <span className="text-text-dim">Region:</span>
-                        <span className="text-text-main">{data.region}</span>
-                    </div>
-                )}
-
-                {data && !error && (
-                    <div className="flex justify-between">
-                        <span className="text-text-dim">Current Time:</span>
-                        <span className="text-text-main">{data.localtime}</span>
-                    </div>
-                )}
-
-                {data && !error && (
-                    <div className="flex justify-between">
-                        <span className="text-text-dim">Temperature:</span>
-                        <span className="text-text-main">{data.temp_f} degrees</span>
-                    </div>
-                )}
+             
             </div>
         </div>
     );
