@@ -1,0 +1,78 @@
+.test-module-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+}
+
+.test-module-meta {
+  display: flex;
+  gap: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.meta-value {
+  font-size: 0.9rem;
+  color: var(--color-text-main);
+}
+
+.test-module-core {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.5rem;
+  min-height: 200px;
+}
+
+.operations-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.operation-button {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.operation-button.active {
+  border-color: var(--color-accent-secondary);
+  color: var(--color-accent-secondary);
+  background: rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+}
+
+.inputs-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.test-module-results {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px dashed var(--color-border);
+  border-radius: 2px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-dim);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

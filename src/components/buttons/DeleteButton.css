@@ -1,0 +1,22 @@
+.delete-button {
+  background-color: var(--color-red-500); /* Using a CSS variable for red */
+  color: var(--color-text-main); /* Assuming text-main is a light color */
+  border: 1px solid var(--color-red-600);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-family: 'Fira Code', monospace; /* Consistent with other components */
+  font-size: 0.875rem; /* text-sm */
+  text-transform: uppercase;
+  letter-spacing: 0.05em; /* tracking-wide */
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.delete-button:hover {
+  background-color: var(--color-red-600);
+  border-color: var(--color-red-700);
+}
+
+.delete-button:active {
+  background-color: var(--color-red-700);
+}
