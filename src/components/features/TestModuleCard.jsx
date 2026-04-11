@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './TestModuleCard.css';
 import DeleteButton from '../buttons/DeleteButton';
 
@@ -6,12 +6,8 @@ import DeleteButton from '../buttons/DeleteButton';
  * TestModuleCard component
  * Represents a single laboratory test module with meta info, operations, and results.
  */
- const TestModuleCard = ({ data, onRemove }) => {
-  // State for internal interactions
-  const [selectedOperation, setSelectedOperation] = useState('Anomaly Detection');
-  const [selectedDataset, setSelectedDataset] = useState('dataset_alpha_v1');
-
-  // Hardcoded options
+const TestModuleCard = ({ data, onRemove, onUpdate }) => {
+  
   const operations = [
     'Anomaly Detection',
     'Matrix Scan',
@@ -24,24 +20,38 @@ import DeleteButton from '../buttons/DeleteButton';
     { id: 'dataset_gamma_v1', label: 'Dataset Gamma v.1' }
   ];
 
+  if (!data) return null;
+
   return (
     <div className="journal-panel test-module-card">
       {/* Top Meta Section */}
       <section className="test-module-meta">
         <div className="meta-item">
-           <div className="ml-auto">
-              <DeleteButton onClick={onRemove} />
-          </div>
           <span className="section-label">Test Name</span>
-          <span className="meta-value">{data?.name || "UNNAMED_TEST"}</span>
+          <input
+            className="meta-input"
+            value={data.name || ""}
+            onChange={(e) => onUpdate({ name: e.target.value })}
+            placeholder="ENTER_NAME..."
+          />
         </div>
         <div className="meta-item">
           <span className="section-label">Test ID</span>
-          <span className="meta-value">T-800-SCAN</span>
+          <span className="meta-value text-accent-primary">
+            {data.id ? `ID_${data.id.toString().slice(0, 8)}` : "GENERIC_SCAN"}
+          </span>
         </div>
         <div className="meta-item">
           <span className="section-label">Department</span>
-          <span className="meta-value">BIOTECH_CORE</span>
+          <input
+            className="meta-input uppercase"
+            value={data.dept || ""}
+            onChange={(e) => onUpdate({ dept: e.target.value })}
+            placeholder="SPECIFY_DEPT..."
+          />
+        </div>
+        <div className="ml-auto">
+          <DeleteButton onClick={onRemove} />
         </div>
       </section>
 
@@ -50,15 +60,17 @@ import DeleteButton from '../buttons/DeleteButton';
         {/* Left Column: Operations */}
         <div className="operations-panel">
           <span className="section-label">Operations</span>
-          {operations.map((op) => (
-            <button
-              key={op}
-              className={`journal-button operation-button ${selectedOperation === op ? 'active' : ''}`}
-              onClick={() => setSelectedOperation(op)}
-            >
-              {op}
-            </button>
-          ))}
+          <div className="flex flex-col gap-1">
+            {operations.map((op) => (
+              <button
+                key={op}
+                className={`journal-button operation-button ${data.operation === op ? 'active' : ''}`}
+                onClick={() => onUpdate({ operation: op })}
+              >
+                {op}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Right Column: Inputs */}
@@ -68,8 +80,8 @@ import DeleteButton from '../buttons/DeleteButton';
             <label className="text-[11px] text-text-dim uppercase tracking-wide">Target Dataset</label>
             <select
               className="journal-select"
-              value={selectedDataset}
-              onChange={(e) => setSelectedDataset(e.target.value)}
+              value={data.dataset || "dataset_alpha_v1"}
+              onChange={(e) => onUpdate({ dataset: e.target.value })}
             >
               {datasets.map((ds) => (
                 <option key={ds.id} value={ds.id}>
@@ -82,8 +94,10 @@ import DeleteButton from '../buttons/DeleteButton';
       </section>
 
       {/* Bottom Results Section */}
-      <section className="test-module-results">
-        <span>No results yet.</span>
+      <section className="test-module-results border-t border-border mt-4 pt-2">
+        <span className="text-[10px] text-text-dim uppercase tracking-tighter">
+          STATUS: {data.status || 'READY'} // TIMESTAMP: {data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
+        </span>
       </section>
     </div>
   );
