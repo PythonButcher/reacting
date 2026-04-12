@@ -36,8 +36,11 @@ export default function ActiveTestsPage() {
       label: `Add ${cmd.display}`,
       icon: React.createElement(cmd.icon),
       onClick: () => handleAddTest({ 
-        name: cmd.display.toUpperCase(), 
-        operation: cmd.display 
+        name: cmd.display.toUpperCase(),
+        dept: "AI_DIAGNOSTICS", 
+        operation: cmd.display, // This matches the display name to the button
+        commandAction: cmd.action // This saves the hidden "detect_outliers" action
+
       })
     }))
   ];

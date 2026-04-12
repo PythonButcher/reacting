@@ -6,6 +6,7 @@
     border-left: 4px solid var(--color-accent-primary);
     background: var(--color-bg-panel);
     transition: all 0.3s ease;
+    margin-bottom: 1rem;
   }
   
   .test-module-card:hover {
@@ -107,9 +108,75 @@
     border-color: var(--color-accent-primary);
   }
   
+  /* Results & Execution Styles */
   .test-module-results {
-    font-size: 0.75rem;
-    color: var(--color-text-dim);
+    margin-top: 1.5rem;
+  }
+
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .run-button {
+    font-size: 10px;
+    padding: 4px 10px;
+    color: var(--color-accent-primary);
+    border: 1px solid var(--color-accent-primary);
+    background: transparent;
+    transition: all 0.2s ease;
+  }
+
+  .run-button:hover {
+    background: var(--color-accent-primary);
+    color: var(--color-bg-main);
+    box-shadow: 0 0 10px var(--color-accent-glow);
+  }
+
+  .terminal-window {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
     font-family: 'Courier New', Courier, monospace;
+  }
+
+  .status-line {
+    display: flex;
+    gap: 10px;
+    font-size: 10px;
+    margin-bottom: 8px;
+    color: var(--color-text-dim);
+  }
+
+  .status-value.pulse {
+    color: var(--color-accent-primary);
+    animation: terminal-blink 1s infinite;
+  }
+
+  .progress-container {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--color-accent-primary);
+    box-shadow: 0 0 10px var(--color-accent-glow);
+    transition: width 0.1s linear;
+  }
+
+  .log-text {
+    font-size: 11px;
+    color: var(--color-accent-secondary);
+  }
+
+  @keyframes terminal-blink {
+    50% { opacity: 0.5; }
   }
   

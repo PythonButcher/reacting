@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './TestModuleCard.css';
 import DeleteButton from '../buttons/DeleteButton';
 
@@ -7,7 +7,8 @@ import DeleteButton from '../buttons/DeleteButton';
  * Represents a single laboratory test module with meta info, operations, and results.
  */
 const TestModuleCard = ({ data, onRemove, onUpdate }) => {
-  
+  const [progress, setProgress] = useState(0);
+
   const operations = [
     'Anomaly Detection',
     'Matrix Scan',
@@ -19,6 +20,28 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
     { id: 'dataset_beta_v2', label: 'Dataset Beta v.2' },
     { id: 'dataset_gamma_v1', label: 'Dataset Gamma v.1' }
   ];
+
+  // High-fidelity scan simulation
+  useEffect(() => {
+    let interval;
+    if (data.status === 'ANALYZING') {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress((old) => {
+          if (old >= 100) {
+            clearInterval(interval);
+            onUpdate({ 
+              status: 'COMPLETED', 
+              results: `SCAN_COMPLETE // DATA_BLOCK_${Math.floor(Math.random() * 9000) + 1000}_VERIFIED` 
+            });
+            return 100;
+          }
+          return old + 4; // Increments by 4% every 100ms
+        });
+      }, 100);
+    }
+    return () => clearInterval(interval);
+  }, [data.status, onUpdate]);
 
   if (!data) return null;
 
@@ -94,10 +117,38 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
       </section>
 
       {/* Bottom Results Section */}
-      <section className="test-module-results border-t border-border mt-4 pt-2">
-        <span className="text-[10px] text-text-dim uppercase tracking-tighter">
-          STATUS: {data.status || 'READY'} // TIMESTAMP: {data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
-        </span>
+      <section className="test-module-results">
+        <div className="results-header">
+          <span className="section-label">Diagnostic Output</span>
+          {data.status !== 'ANALYZING' && (
+            <button 
+              className="journal-button run-button" 
+              onClick={() => onUpdate({ status: 'ANALYZING', results: null })}
+            >
+              [ RUN_DIAGNOSTIC ]
+            </button>
+          )}
+        </div>
+
+        <div className="terminal-window">
+          <div className="status-line">
+            <span className="status-label">SYS_STATUS:</span>
+            <span className={`status-value ${data.status === 'ANALYZING' ? 'pulse' : ''}`}>
+              {data.status || 'READY'}
+            </span>
+            <span className="timestamp-label">{data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}</span>
+          </div>
+
+          {data.status === 'ANALYZING' && (
+            <div className="progress-container">
+              <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+            </div>
+          )}
+
+          <div className="log-text">
+             {data.status === 'ANALYZING' ? `>>> BUFFERING_DATA... ${progress}%` : (data.results || ">>> STANDBY: PENDING_USER_INPUT")}
+          </div>
+        </div>
       </section>
     </div>
   );
