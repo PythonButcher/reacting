@@ -12,9 +12,11 @@ export default function ActiveTestsPage() {
       id: crypto.randomUUID(),
       name: testData.name || "NEW_MODULE",
       dept: testData.dept || "GENERAL_LAB",
-      operation: "Anomaly Detection",
-      dataset: "dataset_alpha_v1",
-      status: "idle",
+      operation: testData.operation || "Anomaly Detection",
+      dataset: null,
+      fileSize: null,
+      fileType: null,
+      status: 'READY',
       timestamp: new Date().toISOString()
     };
     setActiveTests(prev => [...prev, newTest]);
@@ -36,11 +38,8 @@ export default function ActiveTestsPage() {
       label: `Add ${cmd.display}`,
       icon: React.createElement(cmd.icon),
       onClick: () => handleAddTest({ 
-        name: cmd.display.toUpperCase(),
-        dept: "AI_DIAGNOSTICS", 
-        operation: cmd.display, // This matches the display name to the button
-        commandAction: cmd.action // This saves the hidden "detect_outliers" action
-
+        name: cmd.display.toUpperCase(), 
+        operation: cmd.display 
       })
     }))
   ];

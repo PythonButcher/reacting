@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './TestModuleCard.css';
 import DeleteButton from '../buttons/DeleteButton';
+import FileIngestion from './FileIngestion';
 
 /**
  * TestModuleCard component
@@ -15,12 +16,6 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
     'Pattern Search'
   ];
 
-  const datasets = [
-    { id: 'dataset_alpha_v1', label: 'Dataset Alpha v.1' },
-    { id: 'dataset_beta_v2', label: 'Dataset Beta v.2' },
-    { id: 'dataset_gamma_v1', label: 'Dataset Gamma v.1' }
-  ];
-
   // High-fidelity scan simulation
   useEffect(() => {
     let interval;
@@ -32,22 +27,24 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
             clearInterval(interval);
             onUpdate({ 
               status: 'COMPLETED', 
-              results: `SCAN_COMPLETE // DATA_BLOCK_${Math.floor(Math.random() * 9000) + 1000}_VERIFIED` 
+              results: `SCAN_COMPLETE // SOURCE: ${data.dataset?.toUpperCase()} // INTEGRITY_VERIFIED` 
             });
             return 100;
           }
-          return old + 4; // Increments by 4% every 100ms
+          // Dynamic speed based on file size
+          const sizeNum = parseFloat(data.fileSize) || 5;
+          const increment = Math.max(1, Math.min(10, 25 / (sizeNum / 2))); 
+          return old + increment;
         });
-      }, 100);
+      }, 120);
     }
     return () => clearInterval(interval);
-  }, [data.status, onUpdate]);
+  }, [data.status, data.dataset, data.fileSize, onUpdate]);
 
   if (!data) return null;
 
   return (
-    <div className="journal-panel test-module-card">
-      {/* Top Meta Section */}
+    <div className="journal-panel test-module-card animate-in">
       <section className="test-module-meta">
         <div className="meta-item">
           <span className="section-label">Test Name</span>
@@ -60,7 +57,7 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
         </div>
         <div className="meta-item">
           <span className="section-label">Test ID</span>
-          <span className="meta-value text-accent-primary">
+          <span className="meta-value text-accent-primary font-bold">
             {data.id ? `ID_${data.id.toString().slice(0, 8)}` : "GENERIC_SCAN"}
           </span>
         </div>
@@ -73,22 +70,24 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
             placeholder="SPECIFY_DEPT..."
           />
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto pt-1">
           <DeleteButton onClick={onRemove} />
         </div>
       </section>
 
-      {/* Middle Core Section */}
       <section className="test-module-core">
-        {/* Left Column: Operations */}
         <div className="operations-panel">
           <span className="section-label">Operations</span>
-          <div className="flex flex-col gap-1">
+          <div className="button-grid">
             {operations.map((op) => (
               <button
                 key={op}
                 className={`journal-button operation-button ${data.operation === op ? 'active' : ''}`}
-                onClick={() => onUpdate({ operation: op })}
+                onClick={() => onUpdate({ 
+                  operation: op, 
+                  status: 'ANALYZING',
+                  results: null
+                })}
               >
                 {op}
               </button>
@@ -96,36 +95,39 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
           </div>
         </div>
 
-        {/* Right Column: Inputs */}
         <div className="inputs-panel">
-          <span className="section-label">Parameters</span>
-          <div className="input-group">
-            <label className="text-[11px] text-text-dim uppercase tracking-wide">Target Dataset</label>
-            <select
-              className="journal-select"
-              value={data.dataset || "dataset_alpha_v1"}
-              onChange={(e) => onUpdate({ dataset: e.target.value })}
-            >
-              {datasets.map((ds) => (
-                <option key={ds.id} value={ds.id}>
-                  {ds.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <span className="section-label">Data Ingestion</span>
+          <FileIngestion 
+            dataset={data.dataset}
+            fileSize={data.fileSize}
+            fileType={data.fileType}
+            onFileSelect={(file) => onUpdate({
+              dataset: file.name,
+              fileSize: file.size,
+              fileType: file.type,
+              status: 'READY'
+            })}
+            onFileClear={() => onUpdate({
+              dataset: null,
+              fileSize: null,
+              fileType: null,
+              status: 'READY',
+              results: null
+            })}
+          />
         </div>
       </section>
 
-      {/* Bottom Results Section */}
       <section className="test-module-results">
         <div className="results-header">
           <span className="section-label">Diagnostic Output</span>
           {data.status !== 'ANALYZING' && (
             <button 
-              className="journal-button run-button" 
+              className={`run-button ${!data.dataset ? 'disabled' : ''}`}
+              disabled={!data.dataset}
               onClick={() => onUpdate({ status: 'ANALYZING', results: null })}
             >
-              [ RUN_DIAGNOSTIC ]
+              [ EXECUTE_SCAN ]
             </button>
           )}
         </div>
@@ -136,7 +138,7 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
             <span className={`status-value ${data.status === 'ANALYZING' ? 'pulse' : ''}`}>
               {data.status || 'READY'}
             </span>
-            <span className="timestamp-label">{data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}</span>
+            <span className="timestamp-label ml-auto">{data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}</span>
           </div>
 
           {data.status === 'ANALYZING' && (
@@ -146,7 +148,9 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
           )}
 
           <div className="log-text">
-             {data.status === 'ANALYZING' ? `>>> BUFFERING_DATA... ${progress}%` : (data.results || ">>> STANDBY: PENDING_USER_INPUT")}
+             {!data.dataset ? ">>> ERROR: SOURCE_NOT_FOUND" : (
+               data.status === 'ANALYZING' ? `>>> BUFFERING_DATA... ${Math.floor(progress)}%` : (data.results || ">>> SYSTEM_READY: PENDING_EXECUTION")
+             )}
           </div>
         </div>
       </section>
