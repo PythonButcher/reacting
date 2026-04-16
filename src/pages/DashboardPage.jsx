@@ -1,5 +1,7 @@
+import js from '@eslint/js';
 import BackendProjectStats from '../components/features/BackendProjectStats';
 import WeatherUpdate from '../components/features/WeatherData';
+
 
 export default function DashboardPage() {
   return (
