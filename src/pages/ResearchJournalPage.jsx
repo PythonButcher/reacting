@@ -9,18 +9,18 @@ function ResearchJournalPage() {
       </div>
 
       <div className="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden">
-        {/* Left Column: Data Entry */}
-        <div className="w-full md:w-1/3 flex flex-col border border-border p-4 bg-bg-hover rounded-sm">
-          <h2 className="section-label mb-4">New Entry Target</h2>
-          <div className="flex-1">
+        {/* Left Column: Data Entry - Widened to 40% */}
+        <div className="w-full md:w-5/5 flex flex-col border border-border p-4 bg-bg-hover rounded-sm">
+          <h2 className="section-label mb-2 shrink-0">New Entry Target</h2>
+          <div className="flex-1 overflow-hidden">
             <JournalEntry />
           </div>
         </div>
 
-        {/* Right Column: Historical Data Vault (Placeholder for future step) */}
-        <div className="w-full md:w-2/3 border border-border p-4 bg-bg-hover rounded-sm flex flex-col">
-          <h2 className="section-label mb-4">Historical Archives</h2>
-          <div className="flex-1 flex items-center justify-center text-text-dim border border-dashed border-border">
+        {/* Right Column: Historical Data Vault - Adjusted to 60% */}
+        <div className="w-full md:w-2/5 border border-border p-4 bg-bg-hover rounded-sm flex flex-col">
+          <h2 className="section-label mb-2 shrink-0">Historical Archives</h2>
+          <div className="flex-1 flex items-center justify-center text-text-dim border border-dashed border-border h-full">
             [AWAITING_FLASK_DATABASE_FETCH]
           </div>
         </div>

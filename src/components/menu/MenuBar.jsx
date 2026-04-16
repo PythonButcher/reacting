@@ -25,6 +25,7 @@ const MenuBar = ({ onToggleSidebar }) => {
           {/* <NavigateHome /> will go here later */}
           <NavLink to="/" className={({ isActive }) => `text-sm tracking-widest hover:text-accent-secondary transition-colors ${isActive ? 'text-accent-secondary' : 'text-text-dim'}`}>DASHBOARD</NavLink>
           <NavLink to="/experiments" className={({ isActive }) => `text-sm tracking-widest hover:text-accent-secondary transition-colors ${isActive ? 'text-accent-secondary' : 'text-text-dim'}`}>ACTIVE_TESTS</NavLink>
+          <NavLink to="/journal" className={({ isActive }) => `text-sm tracking-widest hover:text-accent-secondary transition-colors ${isActive ? 'text-accent-secondary' : 'text-text-dim'}`}>RESEARCH_JOURNAL</NavLink>
           <NavLink to="/resources" className={({ isActive }) => `text-sm tracking-widest hover:text-accent-secondary transition-colors ${isActive ? 'text-accent-secondary' : 'text-text-dim'}`}>DOCUMENTATION</NavLink>
         </div>
 
