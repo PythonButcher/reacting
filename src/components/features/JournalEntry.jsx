@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function JournalEntry() {
+function JournalEntry({ onLogCommitted }) {
   // Your original state remains untouched
   const [entry, setEntry] = useState("");
   const [isTransmitting, setIsTransmitting] = useState(false);
@@ -24,8 +24,12 @@ function JournalEntry() {
         body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
-        setEntry(""); // Text is only cleared upon successful server save
+     if (response.ok) {
+        setEntry(""); 
+        // Trigger the parent component's fetch function
+        if (onLogCommitted) {
+          onLogCommitted();
+        }
       } else {
         console.error("TRANSMISSION_FAILED:", response.status);
       }
