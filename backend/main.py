@@ -1,29 +1,41 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# Import the new project stats scanner
+from pydantic import BaseModel
 from backend_core.project_stats import scan_project_stats
 import os
+import json
 from pathlib import Path
 import httpx
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
 app = FastAPI()
 
-
-# Configure CORS so your React app (on http://localhost:5173 or 5174) can talk to this backend
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173", "http://127.0.0.1:5173",
         "http://localhost:5174", "http://127.0.0.1:5174"
-    ],  # Default Vite port
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# === NEW: Journal Database Setup ===
+JOURNAL_DB_FILE = Path(__file__).parent / "journal_vault.json"
+
+if not JOURNAL_DB_FILE.exists():
+    with open(JOURNAL_DB_FILE, "w") as f:
+        json.dump([], f)
+
+class JournalEntryPayload(BaseModel):
+    note: str
+    timestamp: str
+# ===================================
 
 @app.get("/")
 async def root():
