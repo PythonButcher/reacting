@@ -142,8 +142,29 @@ async def get_journal_entries():
         
     except Exception as e:
         return {"status": "error", "message": str(e), "entries": []}
+    
+# ... [GET and POST routes are up here] ...
 
+@app.delete("/api/journal/{timestamp}")
+def delete_journal_entry(timestamp: str):
+    try:
+        if not JOURNAL_DB_FILE.exists():
+            return {"status": "error", "message": "Vault is empty"}
 
+        with open(JOURNAL_DB_FILE, "r") as f:
+            vault_data = json.load(f)
+            
+        updated_vault = [entry for entry in vault_data if entry.get("timestamp") != timestamp]
+        
+        with open(JOURNAL_DB_FILE, "w") as f:
+            json.dump(updated_vault, f, indent=4)
+            
+        return {"status": "success", "message": "Log purged from vault"}
+        
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# --- SERVER EXECUTION MUST BE THE ABSOLUTE LAST THING ---
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
