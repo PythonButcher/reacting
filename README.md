@@ -8,9 +8,9 @@ The frontend uses React 19, Vite, React Router, Tailwind CSS v4, React Icons, Ax
 
 ## Current Application Surface
 
-The primary shell lives in `src/app/AppLayout.jsx`, with routing centralized in `src/app/router.jsx`. Current pages are Dashboard, Active Tests, Research Journal, Documentation, and a Not Found route.
+The primary shell lives in `src/app/AppLayout.jsx`, with routing centralized in `src/app/router.jsx`. Current pages are Dashboard, Active Tests, Research Journal, Telemetry Calibration, Documentation, and a Not Found route.
 
-Dashboard shows system status, weather data, and backend project metadata from `/api/stats`. Active Tests provides local experimental module cards with file ingestion and scan simulation. Research Journal posts, reads, and deletes entries through the FastAPI journal endpoints backed by `backend/journal_vault.json`. Documentation is currently a UI route for curated resource links and can grow into an in-app reference surface.
+Dashboard shows system status, weather data, and backend project metadata from `/api/stats`. Active Tests provides local experimental module cards with file ingestion and scan simulation. Research Journal posts, reads, and deletes entries through the FastAPI journal endpoints backed by `backend/journal_vault.json`. Telemetry Calibration is a local-only control surface for future backend project telemetry, with tactile controls, derived meters, and an operational event log. Documentation is currently a UI route for curated resource links and can grow into an in-app reference surface.
 
 ## Backend API
 

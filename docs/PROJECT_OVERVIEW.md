@@ -16,6 +16,8 @@ The `/experiments` route renders `ActiveTestsPage`, where users can create local
 
 The `/journal` route renders `ResearchJournalPage`, which connects to the backend journal API for creating, listing, and deleting research log entries.
 
+The `/telemetry` route renders `TelemetryCalibrationPage`, which hosts the local-only Telemetry Calibration Console for future project telemetry control.
+
 The `/resources` route renders `DocumentationPage`, which is currently an in-app documentation/resource hub.
 
 The wildcard route renders `NotFoundPage`.
@@ -30,6 +32,8 @@ The wildcard route renders `NotFoundPage`.
 
 `JournalEntry` and `ArchiveList` provide the frontend surface for the research journal workflow.
 
+`TelemetryCalibrationConsole` provides the future telemetry control surface. It currently keeps scan intensity, filesystem depth range, file-type focus, refresh cadence, diagnostic mode, anomaly sensitivity, log verbosity, calibration runs, guarded reset behavior, meters, and event logs in local React state only.
+
 ## Current Data Flow
 
-The React frontend calls the FastAPI backend directly through `fetch` from localhost URLs. Shared data is not centralized yet. Most page-level behavior is held in local React state, which is acceptable for the current project size but should be revisited when telemetry controls, journal state, or experiment state become shared across routes.
+The React frontend calls the FastAPI backend directly through `fetch` from localhost URLs where backend-backed features already exist. Shared data is not centralized yet. Most page-level behavior is held in local React state, which is acceptable for the current project size but should be revisited when telemetry controls, journal state, or experiment state become shared across routes. The Telemetry Calibration Console intentionally does not call the backend yet.

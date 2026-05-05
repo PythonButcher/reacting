@@ -14,6 +14,8 @@ The current app uses `createBrowserRouter` from React Router. Page components li
 
 When adding a new page, create the page component first, then register it in `src/app/router.jsx`, then expose navigation from `src/components/menu/MenuBar.jsx` if it should be user-facing.
 
+The `/telemetry` page follows this pattern through `TelemetryCalibrationPage`, which renders the reusable `TelemetryCalibrationConsole` feature component. This console is currently local-state only so it can later be wired to FastAPI telemetry without changing the route contract.
+
 ## Theme System
 
 Theme tokens live in `src/index.css`. The key tokens are Safety Orange through `--color-accent-primary`, Isotope Green through `--color-accent-secondary`, `--color-bg-main`, `--color-bg-panel`, `--color-bg-hover`, `--color-text-main`, `--color-text-dim`, `--color-accent-glow`, and `--color-border`.
@@ -29,7 +31,5 @@ As the app grows, API calls should move toward a small service layer so endpoint
 ## Known Frontend Notes
 
 `src/app/App.css` still contains default Vite starter styles. Before larger layout work, review whether those global root constraints are still intended because they can affect full-width terminal layouts.
-
-`DashboardPage.jsx` imports `@eslint/js` but does not use it. That should be removed during a cleanup pass because the lint config treats unused variables as errors unless they match the configured ignore pattern.
 
 Several backend URLs are hard-coded to `http://127.0.0.1:8000`. That is acceptable during local development, but a Vite environment variable such as `VITE_API_BASE_URL` would be better when the project needs portable deployment behavior.
