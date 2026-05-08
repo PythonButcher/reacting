@@ -1,29 +1,41 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# Import the new project stats scanner
+from pydantic import BaseModel
 from backend_core.project_stats import scan_project_stats
 import os
+import json
 from pathlib import Path
 import httpx
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
 app = FastAPI()
 
-
-# Configure CORS so your React app (on http://localhost:5173 or 5174) can talk to this backend
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173", "http://127.0.0.1:5173",
         "http://localhost:5174", "http://127.0.0.1:5174"
-    ],  # Default Vite port
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# === NEW: Journal Database Setup ===
+JOURNAL_DB_FILE = Path(__file__).parent / "journal_vault.json"
+
+if not JOURNAL_DB_FILE.exists():
+    with open(JOURNAL_DB_FILE, "w") as f:
+        json.dump([], f)
+
+class JournalEntryPayload(BaseModel):
+    note: str
+    timestamp: str
+# ===================================
 
 @app.get("/")
 async def root():
@@ -54,7 +66,7 @@ async def get_weather():
                 "condition": data.get("current", {}).get("condition", {}).get("text")
             }
         except httpx.HTTPError as e:
-            print("I see no weather data " [data])
+            print(f"I see no weather data: {str(e)}")
             return {"error": f"Failed to fetch weather data: {str(e)}"}
 
 @app.get("/api/stats")
@@ -74,6 +86,85 @@ async def get_project_stats():
         "project_stats": stats
     }
 
+@app.post("/api/journal")
+async def save_journal_entry(entry: JournalEntryPayload):
+    """
+    Receives a new journal entry from the React frontend and 
+    appends it to the JSON vault.
+    """
+    try:
+        # Read the existing data
+        if JOURNAL_DB_FILE.exists():
+            with open(JOURNAL_DB_FILE, "r") as f:
+                try:
+                    vault_data = json.load(f)
+                except json.JSONDecodeError:
+                    vault_data = []
+        else:
+            vault_data = []
+            
+        # Append the new entry as a dictionary
+        vault_data.append({
+            "note": entry.note,
+            "timestamp": entry.timestamp
+        })
+        
+        # Write the updated array back to the file
+        with open(JOURNAL_DB_FILE, "w") as f:
+            json.dump(vault_data, f, indent=4)
+            
+        return {"status": "success", "message": "Entry committed to vault"}
+        
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+@app.get("/api/journal")
+async def get_journal_entries():
+    """
+    Retrieves all journal entries from the JSON vault to populate
+    the frontend Historical Archives.
+    """
+    try:
+        # Check if the file exists and has content
+        if not JOURNAL_DB_FILE.exists():
+            return {"status": "success", "entries": []}
+        
+        with open(JOURNAL_DB_FILE, "r") as f:
+            try:
+                vault_data = json.load(f)
+            except json.JSONDecodeError:
+                vault_data = []
+        
+        # Optional: Reverse the data so the newest entries appear first
+        vault_data.reverse()
+            
+        return {"status": "success", "entries": vault_data}
+        
+    except Exception as e:
+        return {"status": "error", "message": str(e), "entries": []}
+    
+# ... [GET and POST routes are up here] ...
+
+@app.delete("/api/journal/{timestamp}")
+def delete_journal_entry(timestamp: str):
+    try:
+        if not JOURNAL_DB_FILE.exists():
+            return {"status": "error", "message": "Vault is empty"}
+
+        with open(JOURNAL_DB_FILE, "r") as f:
+            vault_data = json.load(f)
+            
+        updated_vault = [entry for entry in vault_data if entry.get("timestamp") != timestamp]
+        
+        with open(JOURNAL_DB_FILE, "w") as f:
+            json.dump(updated_vault, f, indent=4)
+            
+        return {"status": "success", "message": "Log purged from vault"}
+        
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# --- SERVER EXECUTION MUST BE THE ABSOLUTE LAST THING ---
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

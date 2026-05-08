@@ -16,11 +16,20 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
     'Pattern Search'
   ];
 
+  // Reset the local meter before parent state enters ANALYZING so the effect only manages the timer.
+  const startAnalysis = (fields = {}) => {
+    setProgress(0);
+    onUpdate({
+      status: 'ANALYZING',
+      results: null,
+      ...fields
+    });
+  };
+
   // High-fidelity scan simulation
   useEffect(() => {
     let interval;
     if (data.status === 'ANALYZING') {
-      setProgress(0);
       interval = setInterval(() => {
         setProgress((old) => {
           if (old >= 100) {
@@ -83,11 +92,7 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
               <button
                 key={op}
                 className={`journal-button operation-button ${data.operation === op ? 'active' : ''}`}
-                onClick={() => onUpdate({ 
-                  operation: op, 
-                  status: 'ANALYZING',
-                  results: null
-                })}
+                onClick={() => startAnalysis({ operation: op })}
               >
                 {op}
               </button>
@@ -125,7 +130,7 @@ const TestModuleCard = ({ data, onRemove, onUpdate }) => {
             <button 
               className={`run-button ${!data.dataset ? 'disabled' : ''}`}
               disabled={!data.dataset}
-              onClick={() => onUpdate({ status: 'ANALYZING', results: null })}
+              onClick={() => startAnalysis()}
             >
               [ EXECUTE_SCAN ]
             </button>

@@ -7,6 +7,8 @@ import DashboardPage from "../pages/DashboardPage";
 import ActiveTestsPage from "../pages/ActiveTestsPage";
 import DocumentationPage from "../pages/DocumentationPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import ResearchJournalPage from "../pages/ResearchJournalPage";
+import TelemetryCalibrationPage from "../pages/TelemetryCalibrationPage";
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +22,14 @@ export const router = createBrowserRouter([
       {
         path: "experiments",
         element: <ActiveTestsPage />,
+      },
+      {
+        path: "journal",
+        element: <ResearchJournalPage />,
+      },
+      {
+        path: "telemetry",
+        element: <TelemetryCalibrationPage />,
       },
       {
         path: "resources",
