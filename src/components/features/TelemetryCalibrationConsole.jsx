@@ -10,18 +10,18 @@ import {
 import "./TelemetryCalibrationConsole.css";
 
 const FILE_FOCUS_OPTIONS = [
-  { value: "all", label: "ALL_TYPES" },
-  { value: "react", label: "REACT_JSX_TSX" },
-  { value: "python", label: "PYTHON_FASTAPI" },
-  { value: "docs", label: "PROJECT_MD_DOCS" },
-  { value: "config", label: "CONFIG_LOCKFILES" },
+  { value: "all", label: "ALL" },
+  { value: "react", label: "REACT" },
+  { value: "python", label: "PYTHON" },
+  { value: "docs", label: "DOCS" },
+  { value: "config", label: "CONFIG" },
 ];
 
 const REFRESH_CADENCE_OPTIONS = [
-  { value: "manual", label: "MANUAL_HOLD" },
-  { value: "15s", label: "15_SEC_SAMPLE" },
-  { value: "60s", label: "60_SEC_SWEEP" },
-  { value: "5m", label: "5_MIN_ARCHIVE" },
+  { value: "manual", label: "MANUAL" },
+  { value: "15s", label: "15 SEC" },
+  { value: "60s", label: "60 SEC" },
+  { value: "5m", label: "5 MIN" },
 ];
 
 const LOG_VERBOSITY_OPTIONS = [
@@ -31,7 +31,12 @@ const LOG_VERBOSITY_OPTIONS = [
   { value: "trace", label: "TRACE" },
 ];
 
-const DIAGNOSTIC_MODES = ["STANDBY", "FILESYSTEM", "ANOMALY", "FULL_TRACE"];
+const DIAGNOSTIC_MODES = [
+  { value: "STANDBY", label: "STBY" },
+  { value: "FILESYSTEM", label: "FILES" },
+  { value: "ANOMALY", label: "ANOM" },
+  { value: "FULL_TRACE", label: "TRACE" },
+];
 
 const DEFAULT_CONSOLE_STATE = {
   anomalySensitivity: 58,
@@ -41,11 +46,14 @@ const DEFAULT_CONSOLE_STATE = {
   minDepth: 1,
   refreshCadence: "manual",
   scanIntensity: 64,
+  stabilityTrim: 42,
+  telemetryBusOnline: true,
+  isolationRelayClosed: false,
   verboseLogging: "info",
 };
 
 function createLogEntry(level, message) {
-  // Keep event records uniform now so this console can later map cleanly to FastAPI telemetry events.
+  // Future wiring: keep this shape close to a backend event DTO so an SSE stream can replace local events later.
   return {
     id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
     level,
@@ -55,77 +63,73 @@ function createLogEntry(level, message) {
 }
 
 function clampNumber(value, min, max) {
-  // Range controls report strings from the DOM; normalize once at the boundary of the component.
+  // DOM range inputs return strings, so every hardware control normalizes values at the boundary.
   return Math.min(max, Math.max(min, Number(value)));
 }
 
 function TelemetryCalibrationConsole() {
   const [scanIntensity, setScanIntensity] = useState(DEFAULT_CONSOLE_STATE.scanIntensity);
+  const [anomalySensitivity, setAnomalySensitivity] = useState(DEFAULT_CONSOLE_STATE.anomalySensitivity);
+  const [stabilityTrim, setStabilityTrim] = useState(DEFAULT_CONSOLE_STATE.stabilityTrim);
   const [minDepth, setMinDepth] = useState(DEFAULT_CONSOLE_STATE.minDepth);
   const [maxDepth, setMaxDepth] = useState(DEFAULT_CONSOLE_STATE.maxDepth);
   const [fileFocus, setFileFocus] = useState(DEFAULT_CONSOLE_STATE.fileFocus);
   const [refreshCadence, setRefreshCadence] = useState(DEFAULT_CONSOLE_STATE.refreshCadence);
   const [diagnosticMode, setDiagnosticMode] = useState(DEFAULT_CONSOLE_STATE.diagnosticMode);
-  const [anomalySensitivity, setAnomalySensitivity] = useState(DEFAULT_CONSOLE_STATE.anomalySensitivity);
   const [verboseLogging, setVerboseLogging] = useState(DEFAULT_CONSOLE_STATE.verboseLogging);
+  const [telemetryBusOnline, setTelemetryBusOnline] = useState(DEFAULT_CONSOLE_STATE.telemetryBusOnline);
+  const [isolationRelayClosed, setIsolationRelayClosed] = useState(DEFAULT_CONSOLE_STATE.isolationRelayClosed);
   const [isControlArmed, setIsControlArmed] = useState(false);
   const [calibrationRuns, setCalibrationRuns] = useState(0);
   const [resetCount, setResetCount] = useState(0);
   const [eventLog, setEventLog] = useState(() => [
-    createLogEntry("BOOT", "LOCAL_CONSOLE_READY // BACKEND_TELEMETRY: NOT_CONNECTED"),
+    createLogEntry("BOOT", "LOCAL_CONSOLE_READY // HARDWARE_PROFILE: RESEARCH_RACK"),
   ]);
 
   const appendEvent = useCallback((level, message) => {
-    setEventLog((currentLog) => [createLogEntry(level, message), ...currentLog].slice(0, 12));
+    setEventLog((currentLog) => [createLogEntry(level, message), ...currentLog].slice(0, 9));
   }, []);
 
   const telemetryModel = useMemo(() => {
-    // Derived values let every visual meter respond to state without inventing network activity.
+    // Future wiring: these derived values can be replaced by FastAPI telemetry once measured fields exist.
     const depthSpan = maxDepth - minDepth + 1;
-    const cadenceLoad = {
-      manual: 4,
-      "15s": 28,
-      "60s": 16,
-      "5m": 8,
-    }[refreshCadence];
-    const focusWeight = {
-      all: 16,
-      react: 11,
-      python: 13,
-      docs: 7,
-      config: 9,
-    }[fileFocus];
-    const modeWeight = {
-      STANDBY: 3,
-      FILESYSTEM: 18,
-      ANOMALY: 26,
-      FULL_TRACE: 34,
-    }[diagnosticMode];
+    const cadenceLoad = { manual: 4, "15s": 30, "60s": 17, "5m": 9 }[refreshCadence];
+    const focusWeight = { all: 16, react: 11, python: 13, docs: 7, config: 9 }[fileFocus];
+    const modeWeight = { STANDBY: 3, FILESYSTEM: 18, ANOMALY: 27, FULL_TRACE: 35 }[diagnosticMode];
+    const relayBoost = telemetryBusOnline ? 7 : -12;
+    const isolationPenalty = isolationRelayClosed ? 9 : 0;
 
-    const scanLoad = clampNumber(Math.round(scanIntensity * 0.46 + depthSpan * 3.2 + focusWeight), 0, 100);
+    const scanLoad = clampNumber(Math.round(scanIntensity * 0.48 + depthSpan * 2.7 + focusWeight + relayBoost), 0, 100);
     const tracePressure = clampNumber(
-      Math.round(anomalySensitivity * 0.42 + modeWeight + cadenceLoad + calibrationRuns * 2),
+      Math.round(anomalySensitivity * 0.43 + modeWeight + cadenceLoad + calibrationRuns * 2 + isolationPenalty),
       0,
       100,
     );
     const stability = clampNumber(
-      Math.round(100 - Math.abs(62 - scanIntensity) * 0.42 - depthSpan * 1.5 - (diagnosticMode === "FULL_TRACE" ? 11 : 0)),
+      Math.round(72 + stabilityTrim * 0.24 - Math.abs(62 - scanIntensity) * 0.34 - depthSpan * 1.2 - isolationPenalty),
       0,
       100,
     );
     const signalConfidence = clampNumber(
-      Math.round((stability + anomalySensitivity * 0.35 + calibrationRuns * 4) / 1.55),
+      Math.round((stability * 0.5 + anomalySensitivity * 0.28 + (telemetryBusOnline ? 18 : 4) + calibrationRuns * 3) / 1.08),
       0,
       100,
     );
 
-    return {
-      scanLoad,
-      signalConfidence,
-      stability,
-      tracePressure,
-    };
-  }, [anomalySensitivity, calibrationRuns, diagnosticMode, fileFocus, maxDepth, minDepth, refreshCadence, scanIntensity]);
+    return { scanLoad, signalConfidence, stability, tracePressure };
+  }, [
+    anomalySensitivity,
+    calibrationRuns,
+    diagnosticMode,
+    fileFocus,
+    isolationRelayClosed,
+    maxDepth,
+    minDepth,
+    refreshCadence,
+    scanIntensity,
+    stabilityTrim,
+    telemetryBusOnline,
+  ]);
 
   const handleDepthChange = (channel, rawValue) => {
     const value = clampNumber(rawValue, 0, 14);
@@ -133,34 +137,37 @@ function TelemetryCalibrationConsole() {
     if (channel === "min") {
       const nextMinDepth = Math.min(value, maxDepth);
       setMinDepth(nextMinDepth);
-      appendEvent("DEPTH", `MIN_DEPTH_GATE_SET // LEVEL_${nextMinDepth}`);
+      appendEvent("DEPTH", `MIN_GATE_INDEXED // LEVEL_${nextMinDepth}`);
       return;
     }
 
     const nextMaxDepth = Math.max(value, minDepth);
     setMaxDepth(nextMaxDepth);
-    appendEvent("DEPTH", `MAX_DEPTH_GATE_SET // LEVEL_${nextMaxDepth}`);
+    appendEvent("DEPTH", `MAX_GATE_INDEXED // LEVEL_${nextMaxDepth}`);
   };
 
   const handleCalibrationRun = () => {
     const nextRunCount = calibrationRuns + 1;
 
     setCalibrationRuns(nextRunCount);
-    appendEvent("CAL", `CALIBRATION_RUN_COMMITTED // LOCAL_RUN_${String(nextRunCount).padStart(2, "0")}`);
+    appendEvent("CAL", `CALIBRATION_SEQUENCE_LATCHED // RUN_${String(nextRunCount).padStart(2, "0")}`);
   };
 
   const handleTelemetryReset = () => {
     setScanIntensity(DEFAULT_CONSOLE_STATE.scanIntensity);
+    setAnomalySensitivity(DEFAULT_CONSOLE_STATE.anomalySensitivity);
+    setStabilityTrim(DEFAULT_CONSOLE_STATE.stabilityTrim);
     setMinDepth(DEFAULT_CONSOLE_STATE.minDepth);
     setMaxDepth(DEFAULT_CONSOLE_STATE.maxDepth);
     setFileFocus(DEFAULT_CONSOLE_STATE.fileFocus);
     setRefreshCadence(DEFAULT_CONSOLE_STATE.refreshCadence);
     setDiagnosticMode(DEFAULT_CONSOLE_STATE.diagnosticMode);
-    setAnomalySensitivity(DEFAULT_CONSOLE_STATE.anomalySensitivity);
     setVerboseLogging(DEFAULT_CONSOLE_STATE.verboseLogging);
+    setTelemetryBusOnline(DEFAULT_CONSOLE_STATE.telemetryBusOnline);
+    setIsolationRelayClosed(DEFAULT_CONSOLE_STATE.isolationRelayClosed);
     setIsControlArmed(false);
     setResetCount((currentCount) => currentCount + 1);
-    appendEvent("RESET", "LOCAL_TELEMETRY_STATE_RESTORED // NO_BACKEND_ENDPOINT_CALLED");
+    appendEvent("RESET", "LOCAL_HARDWARE_STATE_REZEROED // API_NOT_CALLED");
   };
 
   return (
@@ -171,60 +178,115 @@ function TelemetryCalibrationConsole() {
           <h1 id="telemetry-console-title">TELEMETRY_CALIBRATION // CONTROL_SURFACE</h1>
         </div>
 
-        <div className="telemetry-console__status-strip" aria-label="Console status lamps">
-          <IndicatorLamp label="LOCAL_STATE" status="active" />
-          <IndicatorLamp label="BACKEND_LINK" status="standby" />
-          <IndicatorLamp label="GUARD" status={isControlArmed ? "warning" : "standby"} />
-          <IndicatorLamp label="TRACE_LOAD" status={telemetryModel.tracePressure > 78 ? "warning" : "active"} />
-        </div>
+        {/* Future wiring: connect these lamps to backend readiness, scanner freshness, relay state, and trace load thresholds. */}
+        <StatusLightRail
+          guardOpen={isControlArmed}
+          telemetryBusOnline={telemetryBusOnline}
+          tracePressure={telemetryModel.tracePressure}
+        />
       </header>
 
       <div className="telemetry-console__grid">
-        <section className="journal-panel telemetry-rack-panel telemetry-rack-panel--primary">
-          <PanelHeader label="Scan Drive" readout={`LOAD_${telemetryModel.scanLoad}%`} />
+        <section className="journal-panel telemetry-rack-panel telemetry-rack-panel--scan">
+          <PanelHeader label="Primary Calibration Deck" readout={`LOAD_${telemetryModel.scanLoad}%`} />
 
-          <div className="telemetry-knob-row">
-            <RotaryKnob
-              label="SCAN_INTENSITY"
+          {/* Future wiring: send these three dial values as scan intensity, anomaly sensitivity, and stabilization bias. */}
+          <div className="telemetry-dial-board">
+            <InstrumentDial
+              label="SCAN DRIVE"
               max={100}
               min={0}
               onChange={setScanIntensity}
-              onCommit={(value) => appendEvent("SCAN", `SCAN_INTENSITY_SET // ${value}%`)}
+              onCommit={(value) => appendEvent("SCAN", `SCAN_DRIVE_SET // ${value}%`)}
+              size="large"
               unit="%"
               value={scanIntensity}
             />
-            <RotaryKnob
-              label="ANOMALY_GAIN"
+            <InstrumentDial
+              label="ANOMALY GAIN"
               max={100}
               min={0}
               onChange={setAnomalySensitivity}
-              onCommit={(value) => appendEvent("ANOM", `ANOMALY_SENSITIVITY_SET // ${value}%`)}
+              onCommit={(value) => appendEvent("ANOM", `ANOMALY_GAIN_SET // ${value}%`)}
               unit="%"
               value={anomalySensitivity}
             />
+            <InstrumentDial
+              label="STABILITY TRIM"
+              max={100}
+              min={0}
+              onChange={setStabilityTrim}
+              onCommit={(value) => appendEvent("TRIM", `STABILITY_TRIM_SET // ${value}%`)}
+              unit="%"
+              value={stabilityTrim}
+            />
           </div>
 
-          <DepthRangeControl
+          {/* Future wiring: map the gate rails to backend scanner pruning before project_stats walks directories. */}
+          <DepthGateRack
             maxDepth={maxDepth}
             minDepth={minDepth}
             onDepthChange={handleDepthChange}
           />
+        </section>
 
-          <div className="telemetry-select-grid">
-            <LabeledSelect
-              label="FILE_TYPE_FOCUS"
+        <section className="journal-panel telemetry-rack-panel telemetry-rack-panel--routing">
+          <PanelHeader label="Relay And Routing Bus" readout={diagnosticMode} />
+
+          {/* Future wiring: these levers can become boolean backend flags for bus enablement and isolation mode. */}
+          <div className="telemetry-lever-bank">
+            <BreakerLever
+              isOn={telemetryBusOnline}
+              label="TELEMETRY BUS"
+              offLabel="COLD"
+              onLabel="ONLINE"
+              onToggle={() => {
+                const nextValue = !telemetryBusOnline;
+                setTelemetryBusOnline(nextValue);
+                appendEvent("BUS", `TELEMETRY_BUS_${nextValue ? "ONLINE" : "COLD"}`);
+              }}
+            />
+            <BreakerLever
+              isOn={isolationRelayClosed}
+              label="ISOLATION RELAY"
+              offLabel="OPEN"
+              onLabel="CLOSED"
+              onToggle={() => {
+                const nextValue = !isolationRelayClosed;
+                setIsolationRelayClosed(nextValue);
+                appendEvent("RELAY", `ISOLATION_RELAY_${nextValue ? "CLOSED" : "OPEN"}`);
+              }}
+              warning
+            />
+          </div>
+
+          {/* Future wiring: diagnostic mode can map directly to named FastAPI scan profiles or job presets. */}
+          <SelectorDrum
+            label="DIAGNOSTIC MODE"
+            onChange={(mode) => {
+              setDiagnosticMode(mode);
+              appendEvent("MODE", `DIAGNOSTIC_PROFILE_INDEXED // ${mode}`);
+            }}
+            options={DIAGNOSTIC_MODES}
+            value={diagnosticMode}
+          />
+
+          {/* Future wiring: focus and cadence are stable filter/cadence codes for future telemetry requests. */}
+          <div className="telemetry-selector-pair">
+            <SelectorBank
+              label="FILE FOCUS"
               onChange={(value) => {
                 setFileFocus(value);
-                appendEvent("FOCUS", `FILE_FOCUS_ROUTED // ${value.toUpperCase()}`);
+                appendEvent("FOCUS", `FILE_FOCUS_LOCKED // ${value.toUpperCase()}`);
               }}
               options={FILE_FOCUS_OPTIONS}
               value={fileFocus}
             />
-            <LabeledSelect
-              label="REFRESH_CADENCE"
+            <SelectorBank
+              label="REFRESH CADENCE"
               onChange={(value) => {
                 setRefreshCadence(value);
-                appendEvent("CLOCK", `REFRESH_CADENCE_SET // ${value.toUpperCase()}`);
+                appendEvent("CLOCK", `REFRESH_CADENCE_LOCKED // ${value.toUpperCase()}`);
               }}
               options={REFRESH_CADENCE_OPTIONS}
               value={refreshCadence}
@@ -232,40 +294,29 @@ function TelemetryCalibrationConsole() {
           </div>
         </section>
 
-        <section className="journal-panel telemetry-rack-panel">
-          <PanelHeader label="Diagnostic Routing" readout={diagnosticMode} />
+        <section className="journal-panel telemetry-rack-panel telemetry-rack-panel--monitor">
+          <PanelHeader label="Diagnostic Scope" readout="SIGNAL_VIEW" />
 
-          <LeverSwitch
-            label="DIAGNOSTIC_MODE"
-            modes={DIAGNOSTIC_MODES}
-            onChange={(mode) => {
-              setDiagnosticMode(mode);
-              appendEvent("MODE", `DIAGNOSTIC_MODE_SELECTED // ${mode}`);
-            }}
-            value={diagnosticMode}
-          />
+          {/* Future wiring: feed this scope with measured scan/load/confidence signals instead of local derived values. */}
+          <DiagnosticScope telemetryModel={telemetryModel} />
 
-          <SegmentedSelector
-            label="LOG_VERBOSITY"
+          {/* Future wiring: log verbosity should control both client event detail and backend trace detail. */}
+          <SelectorBank
+            compact
+            label="LOG VERBOSITY"
             onChange={(value) => {
               setVerboseLogging(value);
-              appendEvent("LOG", `LOG_VERBOSITY_SET // ${value.toUpperCase()}`);
+              appendEvent("LOG", `LOG_VERBOSITY_LOCKED // ${value.toUpperCase()}`);
             }}
             options={LOG_VERBOSITY_OPTIONS}
             value={verboseLogging}
           />
-
-          <div className="telemetry-meter-bank">
-            <MeterBar label="SCAN_LOAD" tone="orange" value={telemetryModel.scanLoad} />
-            <MeterBar label="TRACE_PRESSURE" tone="green" value={telemetryModel.tracePressure} />
-            <MeterBar label="SIGNAL_CONFIDENCE" tone="green" value={telemetryModel.signalConfidence} />
-            <MeterBar label="STABILITY_MARGIN" tone="orange" value={telemetryModel.stability} />
-          </div>
         </section>
 
         <section className="journal-panel telemetry-rack-panel telemetry-rack-panel--actions">
           <PanelHeader label="Actuation Bay" readout={isControlArmed ? "GUARD_OPEN" : "GUARD_CLOSED"} />
 
+          {/* Future wiring: keep this as the required safety interlock before reset, purge, or destructive mutations. */}
           <GuardSwitch
             isArmed={isControlArmed}
             onToggle={() => {
@@ -275,36 +326,35 @@ function TelemetryCalibrationConsole() {
             }}
           />
 
+          {/* Future wiring: calibration can become POST /api/telemetry/calibration and reset can become a guarded mutation. */}
           <div className="telemetry-action-row">
-            <button
-              className="journal-button telemetry-command-button"
+            <ActuatorButton
+              icon={<FaPlay aria-hidden="true" />}
+              label="RUN_CALIBRATION"
               onClick={handleCalibrationRun}
-              type="button"
-            >
-              <FaPlay aria-hidden="true" />
-              RUN_CALIBRATION
-            </button>
+              tone="green"
+            />
 
-            <button
-              className="journal-button telemetry-command-button telemetry-command-button--danger"
+            <ActuatorButton
               disabled={!isControlArmed}
+              icon={<FaPowerOff aria-hidden="true" />}
+              label="RESET_TELEMETRY"
               onClick={handleTelemetryReset}
-              type="button"
-            >
-              <FaPowerOff aria-hidden="true" />
-              RESET_TELEMETRY
-            </button>
+              tone="orange"
+            />
           </div>
 
+          {/* Future wiring: counters can bind to persisted calibration metadata and active scan bounds. */}
           <div className="telemetry-counter-bank" aria-label="Local operation counters">
             <CounterReadout label="CAL_RUNS" value={String(calibrationRuns).padStart(2, "0")} />
             <CounterReadout label="RESETS" value={String(resetCount).padStart(2, "0")} />
-            <CounterReadout label="DEPTH_SPAN" value={`${minDepth}-${maxDepth}`} />
+            <CounterReadout label="DEPTH" value={`${minDepth}-${maxDepth}`} />
           </div>
         </section>
 
         <section className="journal-panel telemetry-rack-panel telemetry-rack-panel--terminal">
-          <PanelHeader label="Operational Event Log" readout="LOCAL_BUFFER" />
+          <PanelHeader label="Operational Output" readout="LOCAL_BUFFER" />
+          {/* Future wiring: this compact screen can merge local actions with backend telemetry events or SSE updates. */}
           <TerminalEventLog entries={eventLog} />
         </section>
       </div>
@@ -321,7 +371,20 @@ function PanelHeader({ label, readout }) {
   );
 }
 
+function StatusLightRail({ guardOpen, telemetryBusOnline, tracePressure }) {
+  // Future wiring: this rail can render backend health enums without changing the lamp layout.
+  return (
+    <div className="telemetry-status-rail" aria-label="Console status lamps">
+      <IndicatorLamp label="LOCAL" status="active" />
+      <IndicatorLamp label="BUS" status={telemetryBusOnline ? "active" : "standby"} />
+      <IndicatorLamp label="GUARD" status={guardOpen ? "warning" : "standby"} />
+      <IndicatorLamp label="TRACE" status={tracePressure > 78 ? "warning" : "active"} />
+    </div>
+  );
+}
+
 function IndicatorLamp({ label, status }) {
+  // Future wiring: status can become active, standby, warning, or fault from backend telemetry health.
   return (
     <div className="telemetry-lamp" data-status={status}>
       <span className="telemetry-lamp__bulb" aria-hidden="true" />
@@ -330,10 +393,11 @@ function IndicatorLamp({ label, status }) {
   );
 }
 
-function RotaryKnob({ label, max, min, onChange, onCommit, unit, value }) {
+function InstrumentDial({ label, max, min, onChange, onCommit, size = "standard", unit, value }) {
+  // Future wiring: this separates live movement from committed values so API updates can happen on release.
   const rotation = useMemo(() => {
     const percentage = (value - min) / (max - min);
-    return -135 + percentage * 270;
+    return -138 + percentage * 276;
   }, [max, min, value]);
 
   const handleChange = (event) => {
@@ -341,22 +405,20 @@ function RotaryKnob({ label, max, min, onChange, onCommit, unit, value }) {
   };
 
   return (
-    <div className="telemetry-knob-control">
-      <div className="telemetry-knob-control__face" style={{ "--knob-rotation": `${rotation}deg` }}>
-        <div className="telemetry-knob-control__cap">
-          <span className="telemetry-knob-control__pointer" />
-        </div>
+    <div className={`telemetry-dial telemetry-dial--${size}`}>
+      <div className="telemetry-dial__bezel" style={{ "--dial-rotation": `${rotation}deg` }}>
+        <span className="telemetry-dial__needle" aria-hidden="true" />
+        <span className="telemetry-dial__cap" aria-hidden="true" />
       </div>
 
-      <label className="section-label" htmlFor={`${label}-range`}>
-        {label}
-      </label>
-      <output className="telemetry-knob-control__value">{value}{unit}</output>
+      <div className="telemetry-dial__readout">
+        <span className="section-label">{label}</span>
+        <output>{value}{unit}</output>
+      </div>
 
       <input
         aria-label={label}
-        className="telemetry-range"
-        id={`${label}-range`}
+        className="telemetry-hidden-range"
         max={max}
         min={min}
         onChange={handleChange}
@@ -369,94 +431,85 @@ function RotaryKnob({ label, max, min, onChange, onCommit, unit, value }) {
   );
 }
 
-function DepthRangeControl({ maxDepth, minDepth, onDepthChange }) {
+function DepthGateRack({ maxDepth, minDepth, onDepthChange }) {
+  // Future wiring: these gate columns can become min_depth and max_depth parameters for filesystem scanning.
   return (
-    <div className="telemetry-depth-panel">
-      <div className="telemetry-depth-panel__header">
-        <span className="section-label">FILESYSTEM_DEPTH_RANGE</span>
-        <span>{minDepth} :: {maxDepth}</span>
+    <div className="telemetry-depth-rack">
+      <div className="telemetry-depth-rack__header">
+        <span className="section-label">DEPTH GATE COLUMNS</span>
+        <strong>{minDepth} :: {maxDepth}</strong>
       </div>
 
-      <label>
-        <span>MIN_GATE</span>
-        <input
-          className="telemetry-range"
-          max="14"
-          min="0"
-          onChange={(event) => onDepthChange("min", event.target.value)}
-          type="range"
+      <div className="telemetry-depth-columns">
+        <GateColumn
+          label="MIN GATE"
+          max={14}
+          min={0}
+          onChange={(value) => onDepthChange("min", value)}
           value={minDepth}
         />
-      </label>
-
-      <label>
-        <span>MAX_GATE</span>
-        <input
-          className="telemetry-range"
-          max="14"
-          min="0"
-          onChange={(event) => onDepthChange("max", event.target.value)}
-          type="range"
+        <GateColumn
+          label="MAX GATE"
+          max={14}
+          min={0}
+          onChange={(value) => onDepthChange("max", value)}
           value={maxDepth}
         />
-      </label>
+      </div>
     </div>
   );
 }
 
-function LabeledSelect({ label, onChange, options, value }) {
+function GateColumn({ label, max, min, onChange, value }) {
+  // Future wiring: the vertical gate position can be sent as a filesystem scanner depth boundary.
+  const percentage = ((value - min) / (max - min)) * 100;
+
   return (
-    <label className="telemetry-select-control">
+    <label className="telemetry-gate-column" style={{ "--gate-position": `${percentage}%` }}>
       <span className="section-label">{label}</span>
-      <select
-        className="journal-select"
+      <strong>{value}</strong>
+      <span className="telemetry-gate-column__well" aria-hidden="true">
+        <span className="telemetry-gate-column__rack" />
+      </span>
+      <input
+        max={max}
+        min={min}
         onChange={(event) => onChange(event.target.value)}
+        type="range"
         value={value}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      />
     </label>
   );
 }
 
-function LeverSwitch({ label, modes, onChange, value }) {
-  const activeIndex = modes.indexOf(value);
-  const thumbPosition = `${activeIndex * (100 / modes.length)}%`;
-
+function BreakerLever({ isOn, label, offLabel, onLabel, onToggle, warning = false }) {
+  // Future wiring: these knife switches are explicit boolean controls for relay, bus, and safety states.
   return (
-    <div className="telemetry-lever-control">
-      <div className="telemetry-lever-control__header">
+    <button
+      aria-pressed={isOn}
+      className={`telemetry-knife-switch ${warning ? "telemetry-knife-switch--warning" : ""}`}
+      onClick={onToggle}
+      type="button"
+    >
+      <span className="telemetry-knife-switch__hardware" aria-hidden="true">
+        <span className="telemetry-knife-switch__pivot" />
+        <span className="telemetry-knife-switch__blade" />
+        <span className="telemetry-knife-switch__contact" />
+      </span>
+      <span className="telemetry-knife-switch__label">
         <span className="section-label">{label}</span>
-        <span>{value}</span>
-      </div>
-
-      <div className="telemetry-lever-control__track" style={{ "--lever-position": thumbPosition }}>
-        <span className="telemetry-lever-control__thumb" />
-        {modes.map((mode) => (
-          <button
-            aria-pressed={mode === value}
-            className={mode === value ? "is-active" : ""}
-            key={mode}
-            onClick={() => onChange(mode)}
-            type="button"
-          >
-            {mode}
-          </button>
-        ))}
-      </div>
-    </div>
+        <strong>{isOn ? onLabel : offLabel}</strong>
+      </span>
+    </button>
   );
 }
 
-function SegmentedSelector({ label, onChange, options, value }) {
+function SelectorDrum({ label, onChange, options, value }) {
+  // Future wiring: these mode codes can map to backend scan profiles without changing button labels.
   return (
-    <div className="telemetry-segmented-control">
+    <div className="telemetry-selector-drum">
       <span className="section-label">{label}</span>
-      <div className="telemetry-segmented-control__buttons">
+      <div className="telemetry-selector-drum__wheel">
         {options.map((option) => (
           <button
             aria-pressed={option.value === value}
@@ -473,21 +526,85 @@ function SegmentedSelector({ label, onChange, options, value }) {
   );
 }
 
-function MeterBar({ label, tone, value }) {
+function SelectorBank({ compact = false, label, onChange, options, value }) {
+  // Future wiring: selector values are intentionally stable machine codes for filters and logging options.
   return (
-    <div className="telemetry-meter">
-      <div className="telemetry-meter__header">
-        <span>{label}</span>
-        <span>{value}%</span>
-      </div>
-      <div className="telemetry-meter__track">
-        <span className="telemetry-meter__fill" data-tone={tone} style={{ width: `${value}%` }} />
+    <div className={`telemetry-selector-bank ${compact ? "telemetry-selector-bank--compact" : ""}`}>
+      <span className="section-label">{label}</span>
+      <div className="telemetry-selector-bank__buttons">
+        {options.map((option) => (
+          <button
+            aria-pressed={option.value === value}
+            className={option.value === value ? "is-active" : ""}
+            key={option.value}
+            onClick={() => onChange(option.value)}
+            type="button"
+          >
+            {option.label}
+          </button>
+        ))}
       </div>
     </div>
   );
 }
 
+function DiagnosticScope({ telemetryModel }) {
+  // Future wiring: this scope can render sampled backend telemetry arrays instead of CSS-generated traces.
+  return (
+    <div className="telemetry-scope">
+      <div className="telemetry-scope__screen" aria-label="Diagnostic signal scope">
+        <ScopeTrace label="SCAN" tone="orange" value={telemetryModel.scanLoad} />
+        <ScopeTrace label="TRACE" tone="green" value={telemetryModel.tracePressure} />
+        <ScopeTrace label="STAB" tone="orange" value={telemetryModel.stability} />
+      </div>
+      <div className="telemetry-scope__readouts">
+        <ScopeReadout label="LOAD" value={telemetryModel.scanLoad} />
+        <ScopeReadout label="PRESS" value={telemetryModel.tracePressure} />
+        <ScopeReadout label="CONF" value={telemetryModel.signalConfidence} />
+        <ScopeReadout label="STAB" value={telemetryModel.stability} />
+      </div>
+    </div>
+  );
+}
+
+function ScopeTrace({ label, tone, value }) {
+  // Future wiring: each trace can represent a single telemetry channel from streamed backend samples.
+  return (
+    <div className="telemetry-scope-trace" data-tone={tone} style={{ "--trace-level": `${value}%` }}>
+      <span>{label}</span>
+      <i aria-hidden="true" />
+    </div>
+  );
+}
+
+function ScopeReadout({ label, value }) {
+  // Future wiring: these numeric readouts can bind directly to normalized backend metric percentages.
+  return (
+    <div className="telemetry-scope-readout">
+      <span>{label}</span>
+      <strong>{value}%</strong>
+    </div>
+  );
+}
+
+function ActuatorButton({ disabled = false, icon, label, onClick, tone }) {
+  // Future wiring: use this for async commands with pending, success, and fault states when API mutations exist.
+  return (
+    <button
+      className="telemetry-actuator"
+      data-tone={tone}
+      disabled={disabled}
+      onClick={onClick}
+      type="button"
+    >
+      <span className="telemetry-actuator__cap">{icon}</span>
+      <span className="telemetry-actuator__label">{label}</span>
+    </button>
+  );
+}
+
 function GuardSwitch({ isArmed, onToggle }) {
+  // Future wiring: this remains the operator safety interlock before reset or purge API calls.
   return (
     <button
       aria-pressed={isArmed}
@@ -499,8 +616,8 @@ function GuardSwitch({ isArmed, onToggle }) {
         {isArmed ? <FaUnlock aria-hidden="true" /> : <FaLock aria-hidden="true" />}
       </span>
       <span>
-        <span className="section-label">RESET_GUARD</span>
-        <strong>{isArmed ? "MECHANICAL_COVER_OPEN" : "MECHANICAL_COVER_LOCKED"}</strong>
+        <span className="section-label">RESET GUARD</span>
+        <strong>{isArmed ? "COVER OPEN" : "COVER LOCKED"}</strong>
       </span>
       <FaExclamationTriangle aria-hidden="true" />
     </button>
@@ -508,6 +625,7 @@ function GuardSwitch({ isArmed, onToggle }) {
 }
 
 function CounterReadout({ label, value }) {
+  // Future wiring: counters can display persisted calibration run metadata from FastAPI.
   return (
     <div className="telemetry-counter">
       <span>{label}</span>
@@ -517,6 +635,7 @@ function CounterReadout({ label, value }) {
 }
 
 function TerminalEventLog({ entries }) {
+  // Future wiring: entries can be replaced or supplemented by backend telemetry events later.
   return (
     <div className="telemetry-event-log" role="log" aria-live="polite">
       {entries.map((entry) => (
@@ -528,7 +647,7 @@ function TerminalEventLog({ entries }) {
       ))}
       <div className="telemetry-event-log__footer">
         <FaRedo aria-hidden="true" />
-        EVENT_BUFFER_RETAINS_LOCAL_INTERACTIONS_ONLY
+        LOCAL_BUFFER_ONLY
       </div>
     </div>
   );
