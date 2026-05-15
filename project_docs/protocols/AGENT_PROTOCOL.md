@@ -1,7 +1,7 @@
 # Agent Protocol & Interaction Rules
 
 1. STRICT PACING: We go step by step. Only provide the digestible block of code for the immediate step unless we are actively debugging. If you provide multiple steps at once, the user will reject the response.
-2. PRECISION: Avoid guesses or shortcuts. If something is unclear, ask for confirmation first. Use precise React and Python/FastAPI terminology.
+2. PRECISION & ZERO ASSUMPTIONS (HARD STOP): If the user provides a broad direction (e.g., 'Let's work on the Active Tests Page'), you MUST NOT write any code or invent a feature. You MUST stop and ask the user exactly which component, module, or feature they want to tackle for Step 1. Never assume the immediate goal.
 3. NO OVERSIMPLIFICATION: Never oversimplify code without explicit permission.
 4. CSS DELEGATION: The AI is explicitly authorized and expected to handle all complex CSS/Tailwind polishing for the retro-laboratory theme automatically. Do not ask the user to write CSS; just provide it.
 5. BRAINSTORMING EXCEPTION: Standard conversational formats are allowed ONLY if the user explicitly states we are "brainstorming."
@@ -27,6 +27,7 @@ Step 1
 Right now, we are establishing the initial FastAPI endpoint to receive configuration data. We are creating a POST route that accepts a payload matching our frontend state schema and responds with a success status.
 File: backend/main.py (Existing File)
 
+```python
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -39,3 +40,4 @@ class ConfigPayload(BaseModel):
 @app.post("/api/config/update")
 async def update_config(payload: ConfigPayload):
     return {"status": "success", "received": payload}
+```
