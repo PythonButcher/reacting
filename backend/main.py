@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from backend_core.project_stats import scan_project_stats
+from backend_core.chat_service import chat_service
 import os
 import json
 from pathlib import Path
@@ -25,17 +26,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# === NEW: Journal Database Setup ===
+# === Pydantic Models ===
+class JournalEntryPayload(BaseModel):
+    note: str
+    timestamp: str
+
+class ChatRequest(BaseModel):
+    message: str
+# ========================
+
+# === Journal Database Setup ===
 JOURNAL_DB_FILE = Path(__file__).parent / "journal_vault.json"
 
 if not JOURNAL_DB_FILE.exists():
     with open(JOURNAL_DB_FILE, "w") as f:
         json.dump([], f)
-
-class JournalEntryPayload(BaseModel):
-    note: str
-    timestamp: str
-# ===================================
+# ==============================
 
 @app.get("/")
 async def root():
@@ -43,10 +49,8 @@ async def root():
 
 @app.get("/api/weather")
 async def get_weather():
-    # === ENTER YOUR WEATHERAPI.COM CREDENTIALS HERE ===
     api_key = os.getenv("WEATHERAPI_KEY")
     zip_code = os.getenv("WEATHERAPI_ZIP")
-    # ==================================================
     
     if not api_key or not zip_code:
         return {"error": "Please set WEATHERAPI_KEY and WEATHERAPI_ZIP in backend/.env"}
@@ -66,34 +70,17 @@ async def get_weather():
                 "condition": data.get("current", {}).get("condition", {}).get("text")
             }
         except httpx.HTTPError as e:
-            print(f"I see no weather data: {str(e)}")
             return {"error": f"Failed to fetch weather data: {str(e)}"}
 
 @app.get("/api/stats")
 async def get_project_stats():
-    """
-    Returns general filesystem statistics for the current workspace.
-    This endpoint scans the project directory and returns structural metrics.
-    """
-
-    # Determine the root of the project
     project_root = str(Path(__file__).parent.parent.resolve())
-
-    # Run the new stats scanner
     stats = scan_project_stats(project_root)
-
-    return {
-        "project_stats": stats
-    }
+    return {"project_stats": stats}
 
 @app.post("/api/journal")
 async def save_journal_entry(entry: JournalEntryPayload):
-    """
-    Receives a new journal entry from the React frontend and 
-    appends it to the JSON vault.
-    """
     try:
-        # Read the existing data
         if JOURNAL_DB_FILE.exists():
             with open(JOURNAL_DB_FILE, "r") as f:
                 try:
@@ -103,29 +90,18 @@ async def save_journal_entry(entry: JournalEntryPayload):
         else:
             vault_data = []
             
-        # Append the new entry as a dictionary
-        vault_data.append({
-            "note": entry.note,
-            "timestamp": entry.timestamp
-        })
+        vault_data.append({"note": entry.note, "timestamp": entry.timestamp})
         
-        # Write the updated array back to the file
         with open(JOURNAL_DB_FILE, "w") as f:
             json.dump(vault_data, f, indent=4)
             
         return {"status": "success", "message": "Entry committed to vault"}
-        
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
 @app.get("/api/journal")
 async def get_journal_entries():
-    """
-    Retrieves all journal entries from the JSON vault to populate
-    the frontend Historical Archives.
-    """
     try:
-        # Check if the file exists and has content
         if not JOURNAL_DB_FILE.exists():
             return {"status": "success", "entries": []}
         
@@ -135,15 +111,10 @@ async def get_journal_entries():
             except json.JSONDecodeError:
                 vault_data = []
         
-        # Optional: Reverse the data so the newest entries appear first
         vault_data.reverse()
-            
         return {"status": "success", "entries": vault_data}
-        
     except Exception as e:
         return {"status": "error", "message": str(e), "entries": []}
-    
-# ... [GET and POST routes are up here] ...
 
 @app.delete("/api/journal/{timestamp}")
 def delete_journal_entry(timestamp: str):
@@ -160,11 +131,21 @@ def delete_journal_entry(timestamp: str):
             json.dump(updated_vault, f, indent=4)
             
         return {"status": "success", "message": "Log purged from vault"}
-        
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# --- SERVER EXECUTION MUST BE THE ABSOLUTE LAST THING ---
+@app.post("/api/chat")
+async def chat_handler(request: ChatRequest):
+    """
+    Primary interface for the Research Chatbot. 
+    Delegates processing to the ResearchChatService.
+    """
+    response_text = chat_service.process_message(request.message)
+    return {
+        "status": "success",
+        "response": response_text
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

@@ -1,6 +1,6 @@
 import BackendProjectStats from '../components/features/BackendProjectStats';
 import WeatherUpdate from '../components/features/WeatherData';
-
+import ResearchChatbot from '../components/features/ResearchChatbot';
 
 export default function DashboardPage() {
   return (
@@ -16,6 +16,11 @@ export default function DashboardPage() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* RESEARCH_INTELLIGENCE // PRIMARY_UPLINK */}
+          <div className="md:col-span-2">
+            <ResearchChatbot />
+          </div>
+
           <div className="border border-border p-4 bg-bg-hover rounded-sm">
             <h2 className="section-label mb-2">Update</h2>
             <p className="text-sm text-text-dim">Find a useful purpose for this block.</p>
