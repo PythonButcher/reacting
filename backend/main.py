@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from backend_core.project_stats import scan_project_stats
 from backend_core.chat_service import chat_service
+from routers.inventory import router as inventory_router
 import os
 import json
 from pathlib import Path
@@ -145,6 +146,9 @@ async def chat_handler(request: ChatRequest):
         "status": "success",
         "response": response_text
     }
+
+# Register modular routers
+app.include_router(inventory_router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,11 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ContextMenu from "../context/ContextMenu";
 import { contextMenuCommands } from "../utils/contextMenuCommands";
 import TestModuleCard from "../components/features/TestModuleCard";
+import PageHeader from '../components/menu/PageHeader';
+import './ActiveTestsPage.css';
 
 export default function ActiveTestsPage() {
+  // === STATE HOOKS ===
+  const [dataAssets, setDataAssets] = useState([]);
+  const [isLoadingAssets, setIsLoadingAssets] = useState(true);
   const [activeTests, setActiveTests] = useState([]);
 
+  // === DATA FETCH LOGIC ===
+  /**
+   * Fetches the data inventory registry from the FastAPI backend.
+   */
+  const fetchAssets = async () => {
+    try {
+      setIsLoadingAssets(true);
+      const response = await axios.get('http://127.0.0.1:8000/api/inventory');
+      setDataAssets(response.data);
+    } catch (err) {
+      console.error("FAILED_TO_LOAD_INVENTORY:", err);
+    } finally {
+      setIsLoadingAssets(false);
+    }
+  };
+
+  // === SIDE EFFECT HOOK ===
+  useEffect(() => {
+    fetchAssets();
+  }, []); 
+
+  // Handlers for deploying and adjusting modules
   const handleAddTest = (testData) => {
     const newTest = {
       ...testData,
@@ -46,30 +74,45 @@ export default function ActiveTestsPage() {
 
   return (
     <div className="space-y-6 journal-panel h-full">
-      <div className="border-b border-border pb-4">
-        <h1 className="text-3xl font-bold tracking-widest text-accent-primary uppercase">ACTIVE_TESTS // EXPERIMENTS</h1>
-        <p className="text-text-dim text-xs mt-1">TOTAL_MODULES: {activeTests.length} | MONITORING_ACTIVE: YES</p>
-      </div>
+      <PageHeader 
+        title="ACTIVE_TESTS // EXPERIMENTS"
+        statusText={`TOTAL_MODULES: ${activeTests.length} | MONITORING_ACTIVE: YES`}
+      />
 
-      <div className="flex flex-col gap-6 items-center py-4">
-        {activeTests.map((test) => {
-          if (!test || !test.id) return null;
-          return (
-            <TestModuleCard 
-              key={test.id} 
-              data={test} 
-              onRemove={() => handleRemoveTest(test.id)}
-              onUpdate={(fields) => handleUpdateTest(test.id, fields)}
-            />
-          );
-        })}
+      {/* Dual Panel Grid Deck */}
+      <div className="experiments-layout-deck">
         
-        <button 
-          onClick={() => handleAddTest({ name: "NEW_TEST", dept: "BIO_CORE" })}
-          className="journal-button inline-flex mx-auto text-accent-primary uppercase font-bold text-xs"
-        >
-          DEPLOY_ADDITIONAL_MODULE
-        </button>
+        {/* LEFT COLUMN: Data Ingestion Console */}
+        <div className="inventory-column">
+          <div className="journal-panel text-xs text-text-dim text-center py-12 border-dashed">
+            <span>DATA_INVENTORY_PANEL // [PENDING_STEP_3]</span>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Active Diagnostic Modules */}
+        <div className="modules-column">
+          <div className="flex flex-col gap-6 items-center">
+            {activeTests.map((test) => {
+              if (!test || !test.id) return null;
+              return (
+                <TestModuleCard 
+                  key={test.id} 
+                  data={test} 
+                  onRemove={() => handleRemoveTest(test.id)}
+                  onUpdate={(fields) => handleUpdateTest(test.id, fields)}
+                />
+              );
+            })}
+            
+            <button 
+              onClick={() => handleAddTest({ name: "NEW_TEST", dept: "BIO_CORE" })}
+              className="journal-button inline-flex mx-auto text-accent-primary uppercase font-bold text-xs"
+            >
+              DEPLOY_ADDITIONAL_MODULE
+            </button>
+          </div>
+        </div>
+
       </div>
       
       <ContextMenu items={menuItems} />
