@@ -1,10 +1,12 @@
+import PageHeader from '../components/menu/PageHeader';
+
 export default function DocumentationPage() {
   return (
     <div className="space-y-6">
-      <div className="border-b border-border pb-4">
-        <h1 className="text-3xl font-bold tracking-widest text-accent-primary uppercase">DOCUMENTATION // RESOURCES</h1>
-        <p className="text-text-dim text-xs mt-1">LIBRARY_ACCESS: AUTHORIZED | DATA_INTEGRITY: HIGH</p>
-      </div>
+      <PageHeader 
+        title="DOCUMENTATION // RESOURCES"
+        statusText="LIBRARY_ACCESS: AUTHORIZED | DATA_INTEGRITY: HIGH"
+      />
 
       <div className="space-y-4">
         <p className="font-mono text-sm text-text-main">
