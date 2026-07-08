@@ -53,3 +53,4 @@ backend/journal_vault.json
 # Drive Export Artifacts
 drive_export/
 export_to_drive.bat
+*.md

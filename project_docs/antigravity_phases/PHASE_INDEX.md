@@ -1,44 +1,20 @@
-# LAB_TERMINAL //: PHASE IMPLEMENTATION INDEX
-## 10-Phase Guided Learning Roadmap
+# ANTIGRAVITY INITIATIVE //: MASTER CURRICULUM
 
-> **PROTOCOL:** Each phase follows the AGENT_PROTOCOL pacing rules. The AI teaches one step at a time — skeleton-first, concept-deep, paste-and-confirm. No phase begins until the previous phase is explicitly authorized by the operator.
+Welcome to the Antigravity Initiative phases. This directory contains the pedagogical blueprints for constructing a suite of highly tactile, premium UI components. 
 
----
+The phases follow the strict `AGENT_PROTOCOL` format, ensuring a structured, step-by-step learning environment focusing on React and Python engineering.
 
-### Phase Manifest
+## Phase List
 
-| Phase | Codename | Domain | Core Concept |
-|-------|----------|--------|--------------|
-| 01 | **SPECIMEN_PREP** | React Foundations | Component anatomy, props, JSX rendering |
-| 02 | **REAGENT_SYNTHESIS** | State & Hooks | `useState`, `useEffect`, lifting state |
-| 03 | **CENTRIFUGE_PROTOCOL** | Service Layer & API Abstraction | Custom hooks, Axios service modules, separation of concerns |
-| 04 | **CONTAINMENT_FIELD** | Context API & Global State | `createContext`, `useContext`, providers, reducing prop drilling |
-| 05 | **SPECTROMETER_ARRAY** | Data Visualization & Derived State | `useMemo`, `useCallback`, computed telemetry, charting patterns |
-| 06 | **PATHOGEN_TRACE** | Error Boundaries & Defensive UI | Error boundaries, suspense, loading skeletons, fault indicators |
-| 07 | **GENE_SPLICING** | Backend Expansion (Python/FastAPI) | New OO services, APIRouter modules, Pydantic schemas, data validation |
-| 08 | **NEURAL_BRIDGE** | Real-Time Data Streams | SSE (Server-Sent Events), live telemetry feeds, streaming UI patterns |
-| 09 | **CHRONO_DISPLACEMENT** | Performance & Advanced Patterns | `React.memo`, `useReducer`, lazy loading, code splitting, optimization |
-| 10 | **GRAND_UNIFICATION** | Full Integration & Polish | End-to-end wiring, animation systems, accessibility audit, deployment prep |
+1. [PHASE 01: TACTILE_ARRAY](PHASE_01_TACTILE_ARRAY.md) - React state, props, and mechanical UI.
+2. [PHASE 02: DATA_MATRIX_API](PHASE_02_DATA_MATRIX_API.md) - FastAPI routing and data structures.
+3. [PHASE 03: SCROLLING_MATRIX_DISPLAY](PHASE_03_SCROLLING_MATRIX_DISPLAY.md) - React side effects and async fetch.
+4. [PHASE 04: PRECISION_FADER](PHASE_04_PRECISION_FADER.md) - Custom DOM interactions and Refs.
+5. [PHASE 05: BIDIRECTIONAL_SYNC](PHASE_05_BIDIRECTIONAL_SYNC.md) - FastAPI POST and payload validation.
+6. [PHASE 06: ROUTING_PATCH_BAY](PHASE_06_ROUTING_PATCH_BAY.md) - React `useReducer` and graph state.
+7. [PHASE 07: MULTIPANE_WORKSPACE](PHASE_07_MULTIPANE_WORKSPACE.md) - React Router and layout composition.
+8. [PHASE 08: OSCILLOSCOPE_CANVAS](PHASE_08_OSCILLOSCOPE_CANVAS.md) - HTML5 Canvas and animation loops.
+9. [PHASE 09: HEX_AUTHENTICATOR](PHASE_09_HEX_AUTHENTICATOR.md) - Complex form accumulation and conditionals.
+10. [PHASE 10: SYSTEM_OVERDRIVE](PHASE_10_SYSTEM_OVERDRIVE.md) - React Context API and global state.
 
----
-
-### Navigation
-
-- [Phase 01 — SPECIMEN_PREP](./PHASE_01_SPECIMEN_PREP.md)
-- [Phase 02 — REAGENT_SYNTHESIS](./PHASE_02_REAGENT_SYNTHESIS.md)
-- [Phase 03 — CENTRIFUGE_PROTOCOL](./PHASE_03_CENTRIFUGE_PROTOCOL.md)
-- [Phase 04 — CONTAINMENT_FIELD](./PHASE_04_CONTAINMENT_FIELD.md)
-- [Phase 05 — SPECTROMETER_ARRAY](./PHASE_05_SPECTROMETER_ARRAY.md)
-- [Phase 06 — PATHOGEN_TRACE](./PHASE_06_PATHOGEN_TRACE.md)
-- [Phase 07 — GENE_SPLICING](./PHASE_07_GENE_SPLICING.md)
-- [Phase 08 — NEURAL_BRIDGE](./PHASE_08_NEURAL_BRIDGE.md)
-- [Phase 09 — CHRONO_DISPLACEMENT](./PHASE_09_CHRONO_DISPLACEMENT.md)
-- [Phase 10 — GRAND_UNIFICATION](./PHASE_10_GRAND_UNIFICATION.md)
-
----
-
-### Pacing Rules (from AGENT_PROTOCOL.md)
-1. One step at a time. No code for Step N+1 until the operator confirms Step N.
-2. Every step includes a **Key Concept** (two paragraphs) and a **Code Implementation** (complete, paste-ready).
-3. The AI writes CSS directly. JSX/JS is provided for the operator to paste.
-4. No shortcuts, no placeholders, no skeleton-only stubs.
+When you are ready to begin, review Phase 01 and state: "Initiate Phase 01."
