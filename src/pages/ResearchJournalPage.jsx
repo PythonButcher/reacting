@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import JournalEntry from '../components/features/JournalEntry';
 import ArchiveList from '../components/features/ArchiveList';
+import PageHeader from '../components/menu/PageHeader';
 
 function ResearchJournalPage() {
   const [archives, setArchives] = useState([]);
@@ -26,16 +27,13 @@ function ResearchJournalPage() {
     fetchArchives();
   }, []);
 
-// --- NEW: Deletion Handler ---
   const deleteEntry = async (timestamp) => {
     try {
-      // Wrap the timestamp in encodeURIComponent to sanitize colons and special characters
       const response = await fetch(`http://127.0.0.1:8000/api/journal/${encodeURIComponent(timestamp)}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        // Instantly sync the UI by re-fetching the updated list
         fetchArchives();
       } else {
         console.error("DELETION_FAILED:", response.status);
@@ -47,10 +45,10 @@ function ResearchJournalPage() {
 
   return (
     <div className="space-y-6 h-full flex flex-col">
-      <div className="border-b border-border pb-4 shrink-0">
-        <h1 className="text-3xl font-bold tracking-widest text-accent-primary uppercase">RESEARCH_JOURNAL // LOGS</h1>
-        <p className="text-text-dim text-xs mt-1">STATUS: RECORDING | DATA_VAULT: ACTIVE</p>
-      </div>
+      <PageHeader 
+        title="RESEARCH_JOURNAL // LOGS"
+        statusText="STATUS: RECORDING | DATA_VAULT: ACTIVE"
+      />
 
       <div className="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden">
         <div className="w-full md:w-3/5 flex flex-col border border-border p-6 bg-bg-hover/30 rounded-sm shadow-inner">
