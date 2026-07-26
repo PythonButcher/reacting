@@ -53,4 +53,7 @@ backend/journal_vault.json
 # Drive Export Artifacts
 drive_export/
 export_to_drive.bat
-*.md
+
+# Legacy Phase Duplicates
+project_docs/antigravity_legacy_phase_duplicates/
+
