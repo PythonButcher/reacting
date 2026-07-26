@@ -25,6 +25,7 @@
 
 
 ## Context Management (Harness Engineering)
+- **ACTIVE GATE ROUTING (MANDATORY):** Before writing code or answering prompts in a session, the AI MUST inspect `project_docs/active_gate/` to identify the active phase and step currently in progress.
 - **CONTEXT COMPRESSION:** If the conversation history becomes excessively long or context feels fragmented, the AI must proactively suggest a "Compression Turn." This involves summarizing all work completed so far and updating the `project_docs/` to reflect the new state of truth.
 - **SELECTIVE READING:** Do not read all documentation files unless a task spans multiple domains (e.g., UI + Backend). Reference only what is necessary for the current step.
 
