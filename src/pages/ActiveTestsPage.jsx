@@ -6,6 +6,7 @@ import TestModuleCard from "../components/features/TestModuleCard";
 import PageHeader from '../components/menu/PageHeader';
 import './ActiveTestsPage.css';
 import DataInventoryPanel from '../components/features/DataInventoryPanel';
+import TactileSwitch from '../components/features/TactileSwitch';
 
 export default function ActiveTestsPage() {
   // === STATE HOOKS ===
@@ -79,6 +80,24 @@ export default function ActiveTestsPage() {
         title="ACTIVE_TESTS // EXPERIMENTS"
         statusText={`TOTAL_MODULES: ${activeTests.length} | MONITORING_ACTIVE: YES`}
       />
+
+      {/* HARDWARE CONTROL BANK — Powered by TactileSwitch Component */}
+      <div className="flex flex-wrap gap-4 items-center journal-panel p-3">
+        <span className="section-label mr-2">HARDWARE_CONTROLS:</span>
+        <TactileSwitch
+          label="MAIN_POWER"
+          accentColor="#f59e0b"
+          defaultOn={true}
+        />
+        <TactileSwitch
+          label="ISOTOPE_PUMP"
+          accentColor="#10b981"
+        />
+        <TactileSwitch
+          label="LASER_SHUTTER"
+          accentColor="#ef4444"
+        />
+      </div>
 
       {/* Dual Panel Grid Deck */}
       <div className="experiments-layout-deck">

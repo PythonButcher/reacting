@@ -29,8 +29,13 @@
 
 ### Step 4 — Dynamic Props
 - **Target File:** `src/components/features/TactileSwitch.jsx`
-- **Goal:** Pass dynamic labels and accent colors via props.
+- **Goal:** Pass dynamic labels, accent colors, and callback props.
+
+### Step 5 — Parent Integration & Live Verification (TRUE FINISH GOAL)
+- **Target File:** `src/pages/ActiveTestsPage.jsx` (or active dashboard view)
+- **Goal:** Import `<TactileSwitch />` into the parent page, render multiple instances with different dynamic props (labels & colors), and verify the component live in the UI.
 
 ---
 
-*Upon completion of Phase 01, this file will be moved to `project_docs/archive/`.*
+*Upon completion of Step 5 and live verification, Phase 01 will be marked COMPLETE and this file will be moved to `project_docs/archive/`.*
+

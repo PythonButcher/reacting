@@ -10,7 +10,8 @@ When you are ready to begin, simply state: "Initiate Phase 1."
 ### Phase 1: LED Status Indicator (React State & Props)
 **Objective:** Construct a togglable, glowing LED indicator component.
 **Learning Focus:** Introduction to React functional components, `useState`, and passing data via `props`. 
-**Action:** We will build a sleek LED component that changes color and glow intensity when clicked, simulating a hardware power button.
+**Action:** We will build a sleek LED component that changes color and glow intensity when clicked, and mount it into an active page to pass dynamic props and verify it live in the UI.
+
 
 ### Phase 2: System Uptime Endpoint (FastAPI GET)
 **Objective:** Engineer a backend endpoint to serve system data.

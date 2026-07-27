@@ -20,7 +20,10 @@
     - Give short, complete functions for the user to write/paste one by one.
     - Stop and wait for the user to write the code and confirm before moving to the next part.
     - The AI must not write the code to disk for the user's active files.
-
+9. TRUE FINISH GOAL & END-TO-END INTEGRATION (MANDATORY):
+    - No phase or component step may be declared complete until it is fully integrated, rendered, and verified live in an active parent page or view.
+    - Every newly introduced concept (such as props, state handlers, or API hooks) MUST be explicitly mounted and exercised in the application UI during the phase. Never leave components or props sitting in isolation without wiring them end-to-end.
+    - All phase plans and active gates must explicitly define an Integration & Verification step as their final milestone.
 
 
 

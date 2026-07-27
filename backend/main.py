@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from backend_core.project_stats import scan_project_stats
 from backend_core.chat_service import chat_service
 from routers.inventory import router as inventory_router
+from routers.telemetry import router as telemetry_router
 import os
 import json
 from pathlib import Path
@@ -149,6 +150,7 @@ async def chat_handler(request: ChatRequest):
 
 # Register modular routers
 app.include_router(inventory_router, prefix="/api")
+app.include_router(telemetry_router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
