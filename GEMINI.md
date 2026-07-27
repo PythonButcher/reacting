@@ -1,8 +1,11 @@
 # System Harness //: LAB_TERMINAL
-**AI INSTRUCTION:** Do not assume project context. Read the specific files routed below based on the current user request. Do not read them all at once unless required.
+**AI INSTRUCTION:** This project uses the **Repository System of Record** architecture (Harness Engineering Lecture 03). Read the entry point and constraints before proceeding:
 
-* **RULES & PACING:** READ project_docs/protocols/AGENT_PROTOCOL.md (CRITICAL: Read this before writing any code or answering prompts).
-* **ACTIVE WORKSPACE GATE (CRITICAL):** READ project_docs/active_gate/ to determine the active phase, step, and current state of progress.
-* **ARCHITECTURE:** READ project_docs/architecture/FRONTEND_BACKEND.md for Vite/React/FastAPI structural rules.
-* **UI & THEME:** READ project_docs/design/THEME.md for skeuomorphic laboratory UI guidelines and CSS delegation.
-* **PEDAGOGICAL GUIDED CODING (CRITICAL):** This is a learning-focused environment. You are FORBIDDEN from outputting complete ready-to-run frontend/backend code blocks. You MUST break down implementation into logical steps, explain React/Python concepts in depth, and provide skeletons where the user writes/fills in state hooks, callbacks, and handlers themselves.
+* **PRIMARY ENTRY PAGE:** READ [AGENTS.md](file:///c:/Users/18022/Desktop/reacting/AGENTS.md) for system overview, commands, and knowledge map.
+* **HARD CONSTRAINTS & PACING (CRITICAL):** READ [CONSTRAINTS.md](file:///c:/Users/18022/Desktop/reacting/CONSTRAINTS.md) before writing any code or providing responses.
+* **ACTIVE PROGRESS GATE (CRITICAL):** READ [PROGRESS.md](file:///c:/Users/18022/Desktop/reacting/PROGRESS.md) to determine current active phase, step, and gate status.
+* **FRONTEND ARCHITECTURE:** READ [src/ARCHITECTURE.md](file:///c:/Users/18022/Desktop/reacting/src/ARCHITECTURE.md) for React 19 / Vite structural rules.
+* **BACKEND ARCHITECTURE:** READ [backend/ARCHITECTURE.md](file:///c:/Users/18022/Desktop/reacting/backend/ARCHITECTURE.md) for FastAPI service rules.
+* **UI & HARDWARE THEME:** READ [src/THEME.md](file:///c:/Users/18022/Desktop/reacting/src/THEME.md) for skeuomorphic laboratory UI guidelines.
+
+* **PEDAGOGICAL GUIDED CODING (CRITICAL):** This is a learning-focused environment. You are FORBIDDEN from outputting complete ready-to-run frontend/backend code blocks. You MUST break down implementation into logical steps, explain React/Python concepts in depth (2 short paragraphs), and provide skeletons where the user writes/fills in state hooks, callbacks, and handlers themselves.
