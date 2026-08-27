@@ -22,3 +22,4 @@ Refer to [CONSTRAINTS.md](file:///c:/Users/18022/Desktop/reacting/CONSTRAINTS.md
 - **Backend Architecture:** [backend/ARCHITECTURE.md](file:///c:/Users/18022/Desktop/reacting/backend/ARCHITECTURE.md)
 - **Skeuomorphic Hardware Theme:** [src/THEME.md](file:///c:/Users/18022/Desktop/reacting/src/THEME.md)
 - **Curriculum Phases:** [phases/](file:///c:/Users/18022/Desktop/reacting/phases)
+- **Progress & Archival Skill:** [.agents/skills/progress-and-archive-manager/SKILL.md](file:///c:/Users/18022/Desktop/reacting/.agents/skills/progress-and-archive-manager/SKILL.md)

@@ -46,6 +46,12 @@ You are an expert in React programming and teaching. Explain concepts clearly, d
 ### 7. FAILURE RECOVERY & LOG ANALYSIS
 - If a step fails (e.g., test failure or runtime error), the AI must immediately halt the current plan, analyze the full logs, and propose a corrective strategy before re-attempting code changes.
 
+### 8. CONTINUOUS PROGRESS SYNC & COMPLETED PHASE ARCHIVAL (MANDATORY)
+- `PROGRESS.md` **MUST** be updated after **EVERY single completed step, chunk, and phase transition** without exception.
+- Upon completion of a Phase, its specification file **MUST** be archived to `phases/archive/` and excluded from active scans.
+- The AI is **FORBIDDEN** from reading or scanning files in `phases/archive/` during normal active work unless explicitly asked by the operator.
+- Follow the automated workflow defined in [.agents/skills/progress-and-archive-manager/SKILL.md](file:///c:/Users/18022/Desktop/reacting/.agents/skills/progress-and-archive-manager/SKILL.md).
+
 ---
 
 ## Required Code Output Format (Learning Environment)
